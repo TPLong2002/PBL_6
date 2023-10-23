@@ -1,5 +1,3 @@
-import Img from "../img/logo/logo.png";
-
 import "../App.css";
 
 function DefaultApp({ children }) {
