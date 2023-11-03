@@ -1,7 +1,7 @@
 import { Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -9,10 +9,21 @@ function classNames(...classes) {
 
 export default function ChatBox({ chatUser }) {
   const content = [];
-  content.push({ sender: chatUser.name, text: chatUser.lastContent });
+  content.push({ sender: chatUser.userName, text: chatUser.lastContent });
   const [message, setMessage] = useState("");
   const [chat, setChat] = useState(content);
+  const chatContainerRef = useRef(null);
 
+  useEffect(() => {
+    setChat(content);
+    return () => {};
+  }, [chatUser]);
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
+    }
+  }, [chat]);
   const handleSendMessage = () => {
     if (message.trim() !== "") {
       // Tạo tin nhắn mới và thêm vào cuộc trò chuyện
@@ -33,11 +44,11 @@ export default function ChatBox({ chatUser }) {
         <div className="flex items-center">
           <img
             src={chatUser.avt}
-            alt={chatUser.name}
+            alt={chatUser.userName}
             className="w-10 h-10 rounded-full mr-2"
           />
           <div>
-            <div className="font-semibold">{chatUser.name}</div>
+            <div className="font-semibold">{chatUser.userName}</div>
             <div className="text-sm text-gray-600">Trạng thái trực tuyến</div>
           </div>
         </div>
@@ -139,14 +150,26 @@ export default function ChatBox({ chatUser }) {
         </Menu>
       </div>
 
-      <div className="border-t-2 border-gray-300 p-4 h-full overflow-y-auto">
+      <div
+        className="border-t-2 border-gray-300 p-4 h-full overflow-auto max-h-[44.5rem] scrollbar-hide"
+        ref={chatContainerRef}
+      >
         {chat.map((message, index) => (
           <div
             key={index}
             className={`mb-2 ${message.sender === "You" ? "text-right" : ""}`}
           >
-            <span className="font-semibold">{message.sender}:</span>
-            {message.text}
+            <span
+              className={`font-medium p-3 text-xl rounded-lg inline-block break-words ${
+                message.sender === "You" ? "bg-blue-200" : "bg-gray-200"
+              } `}
+              style={{
+                maxWidth: "80%", // Điều này giới hạn chiều ngang của phần tử
+                overflow: "auto", // Tạo thanh cuộn nếu nội dung bên trong quá rộng
+              }}
+            >
+              {message.text}
+            </span>
           </div>
         ))}
       </div>

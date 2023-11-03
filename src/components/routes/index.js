@@ -7,8 +7,10 @@ import StoreIF from "../pages/StoreIF";
 import Users from "../pages/Users";
 import History from "../pages/Users/history";
 import Order from "../pages/Order";
+import Banner from "../pages/Banner";
 const publicRoutes = [
   { path: "/", component: Chat },
+  { path: "/chat", component: Chat },
   { path: "/product", component: Product },
   { path: "/test", component: Test },
   { path: "/product/editproduct", component: EditProduct },
@@ -17,6 +19,7 @@ const publicRoutes = [
   { path: "/users", component: Users },
   { path: "/users/history", component: History },
   { path: "/order", component: Order },
+  { path: "/changebanner", component: Banner },
 ];
 const privateRoutes = [];
 export { publicRoutes, privateRoutes };

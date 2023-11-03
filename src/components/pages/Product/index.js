@@ -15,7 +15,7 @@ export default function App() {
       <div className="flex w-full">
         <Menu
           as="div"
-          className="w-1/4 relative inline-block text-left border-2 border-gray-600"
+          className="w-1/4 relative inline-block text-left border-gray-600"
         >
           <div>
             <Menu.Button className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-lg font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
@@ -98,7 +98,7 @@ export default function App() {
             </Menu.Items>
           </Transition>
         </Menu>
-        <div className="w-2/4 flex items-center justify-center border-2 border-gray-600">
+        <div className="w-2/4 flex items-center justify-center border-gray-600">
           <div className="justify-items-center mr-8">Sắp xếp:</div>
           <Menu
             as="div"
@@ -192,43 +192,51 @@ export default function App() {
             </Transition>
           </Menu>
         </div>
-        <div className="flex items-center justify-center border-2 border-gray-600">
+        <div className="flex items-center justify-center border-gray-600">
           <input
             type="text"
             placeholder="Tìm..."
             className="w-full p-2 border border-gray-400 rounded mr-2"
           />
-          <button className="bg-blue-500 text-white px-4 py-2 rounded">
+          <button className="bg-blue-500 text-white px-4 py-2 rounded transition ease-in-out delay-50 hover:-translate-y-1 hover:scale-105 duration-300">
             Tìm
           </button>
           <Link
             to={"/product/addproduct"}
-            className="ml-2 bg-blue-500 text-white px-4 py-2 rounded"
+            className="ml-2 bg-blue-500 text-white px-4 py-2 rounded transition ease-in-out delay-50 hover:-translate-y-1 hover:scale-105 duration-300"
           >
             Thêm
           </Link>
         </div>
       </div>
-      <div className="flex flex-wrap w-full mt-4 ">
-        {Products.map((product, index) => {
-          return (
-            <Link
-              key={index}
-              to={{
-                pathname: "/product/editproduct",
-                search: `?id=${product.id}`,
-              }}
-              className="w-1/6 justify-center m-2 border-2 border-red-300"
-            >
-              <img src={imgProduct} alt="img"></img>
-              <div className="text-center">Price: {product.Price}</div>
-              <div className="text-center">
-                Discount: {product.Price - product.Price * product.Discount}
-              </div>
-              <div className="text-center">{product.Name}</div>
-            </Link>
-          );
-        })}
+      <div className="">
+        <div className="flex flex-wrap w-full mt-4 overflow-y-auto h-[48rem] scrollbar-hide">
+          {Products.map((product, index) => {
+            return (
+              <Link
+                key={index}
+                to={{
+                  pathname: "/product/editproduct",
+                  search: `?id=${product.id}`,
+                }}
+                className="w-[12.7rem] justify-center m-4 border-2 rounded-md border-red-300 transition ease-in-out delay-50 relative hover:-translate-y-1 hover:scale-110 duration-300 shadow-md"
+              >
+                <img src={imgProduct} alt="img"></img>
+                <div className="absolute top-2 left-2 bg-red-500 text-white py-1 px-2 rounded-full text-xs">
+                  -{product.Discount * 100}%
+                </div>
+                <div className="text-center mb-5">{product.Name}</div>
+                <div className="text-center line-through mb-1 text-[0.9rem] text-gray-500">
+                  ₫{product.Price}
+                </div>
+                <div className="text-center mb-2 text-[#dd0105]">
+                  ₫{product.Price - product.Price * product.Discount}
+                </div>
+                <div className="text-center">đã bán: 1</div>
+              </Link>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
