@@ -1,15 +1,44 @@
-import { Fragment } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import React from "react";
-import { Products } from "./Products";
-import imgProduct from "../../../img/product/imgProduct.jpg";
 import { Link } from "react-router-dom";
+import request from "../../../services/axios/index";
+import StarRating from "./rating";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 export default function App() {
+  const [selectCatalog, setSelectCatalog] = useState(0);
+  const [catalog, setCatalog] = useState([]);
+  const [products, setProducts] = useState([]);
+
+  const handleSelectCatalog = (index) => {
+    setSelectCatalog(index);
+  };
+  useEffect(() => {
+    if (selectCatalog === 0) {
+      setProducts([]);
+      request
+        .get("/itemgroups")
+        .then((res) => {
+          setCatalog(res.data);
+          return res;
+        })
+        .then((res) => {
+          res.data.map((item) => {
+            item.items.map((item) => {
+              setProducts((products) => [...products, item]);
+            });
+          });
+        });
+    } else {
+      request.get(`/items/${selectCatalog}`).then((res) => {
+        setProducts(res.data);
+      });
+    }
+  }, [selectCatalog]);
   return (
     <div className="flex flex-col">
       <div className="flex w-full">
@@ -19,7 +48,7 @@ export default function App() {
         >
           <div>
             <Menu.Button className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-lg font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-              Options
+              Danh mục
               <ChevronDownIcon
                 className="-mr-1 h-5 w-5 text-gray-400"
                 aria-hidden="true"
@@ -38,62 +67,45 @@ export default function App() {
           >
             <Menu.Items className="absolute left-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
               <div className="py-1">
-                <Menu.Item onClick={() => {}}>
+                <Menu.Item
+                  onClick={() => {
+                    handleSelectCatalog(0);
+                  }}
+                >
                   {({ active }) => (
-                    <a
+                    <button
                       href="#/"
                       className={classNames(
                         active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                        "block px-4 py-2 text-sm"
+                        "block px-4 py-2 text-sm w-full text-left"
                       )}
                     >
-                      Account settings
-                    </a>
+                      Tất cả
+                    </button>
                   )}
                 </Menu.Item>
-                <Menu.Item>
-                  {({ active }) => (
-                    <a
-                      href="#/"
-                      className={classNames(
-                        active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                        "block px-4 py-2 text-sm"
-                      )}
-                    >
-                      Support
-                    </a>
-                  )}
-                </Menu.Item>
-                <Menu.Item>
-                  {({ active }) => (
-                    <a
-                      href="#/"
-                      className={classNames(
-                        active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                        "block px-4 py-2 text-sm"
-                      )}
-                    >
-                      License
-                    </a>
-                  )}
-                </Menu.Item>
-                <form method="POST" action="#/">
-                  <Menu.Item>
+                {catalog.map((item, index) => (
+                  <Menu.Item
+                    onClick={() => {
+                      handleSelectCatalog(item.id);
+                    }}
+                    key={index}
+                  >
                     {({ active }) => (
                       <button
-                        type="submit"
+                        href="#/"
                         className={classNames(
                           active
                             ? "bg-gray-100 text-gray-900"
                             : "text-gray-700",
-                          "block w-full px-4 py-2 text-left text-sm"
+                          "block px-4 py-2 text-sm w-full text-left"
                         )}
                       >
-                        Sign out
+                        {item.name}
                       </button>
                     )}
                   </Menu.Item>
-                </form>
+                ))}
               </div>
             </Menu.Items>
           </Transition>
@@ -209,34 +221,35 @@ export default function App() {
           </Link>
         </div>
       </div>
-      <div className="">
-        <div className="flex flex-wrap w-full mt-4 overflow-y-auto h-[48rem] scrollbar-hide">
-          {Products.map((product, index) => {
-            return (
-              <Link
-                key={index}
-                to={{
-                  pathname: "/product/editproduct",
-                  search: `?id=${product.id}`,
-                }}
-                className="w-[12.7rem] justify-center m-4 border-2 rounded-md border-red-300 transition ease-in-out delay-50 relative hover:-translate-y-1 hover:scale-110 duration-300 shadow-md"
-              >
-                <img src={imgProduct} alt="img"></img>
-                <div className="absolute top-2 left-2 bg-red-500 text-white py-1 px-2 rounded-full text-xs">
-                  -{product.Discount * 100}%
-                </div>
-                <div className="text-center mb-5">{product.Name}</div>
-                <div className="text-center line-through mb-1 text-[0.9rem] text-gray-500">
-                  ₫{product.Price}
-                </div>
-                <div className="text-center mb-2 text-[#dd0105]">
-                  ₫{product.Price - product.Price * product.Discount}
-                </div>
-                <div className="text-center">đã bán: 1</div>
-              </Link>
-            );
-          })}
-        </div>
+      <div className="flex flex-wrap w-full mt-4 overflow-y-auto h-[48rem] scrollbar-hide">
+        {products.map((product, index) => {
+          return (
+            <Link
+              key={index}
+              to={{
+                pathname: "/product/editproduct",
+                search: `?id=${product.id}`,
+              }}
+              className="w-[12.7rem] justify-center m-4 border-2 rounded-md border-red-300 transition ease-in-out delay-50 relative hover:-translate-y-1 hover:scale-110 duration-300 shadow-md"
+            >
+              <img src={product.imagesItem[0].image} alt="img"></img>
+              <div className="absolute top-2 left-2 bg-red-500 text-white py-1 px-2 rounded-full text-xs">
+                -{product.discount * 100}%
+              </div>
+              <div className="text-center mb-5">{product.name}</div>
+              <div className="text-center line-through mb-1 text-[0.9rem] text-gray-500">
+                ₫{product.discount}
+              </div>
+              <div className="text-center mb-2 text-[#dd0105]">
+                ₫{product.sellPrice}
+              </div>
+              <div className="text-center">đã bán: 1</div>
+              <div className="flex justify-center mt-2">
+                <StarRating rating={product.rating} />
+              </div>
+            </Link>
+          );
+        })}
       </div>
     </div>
   );

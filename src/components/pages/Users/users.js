@@ -7,6 +7,7 @@ const users = [
     Name: "NVA",
     Adress: "Quảng Nam",
     SDT: "012345678",
+    Content: ["a", "b", "c", "shop", "key", "1", "2", "3", ".."],
     lastContent: "..",
   },
   {
@@ -16,6 +17,7 @@ const users = [
     Name: "NVB",
     Adress: "HCM",
     SDT: "00000000",
+    Content: ["a", "a", "a", "Hello"],
     lastContent: "Hello",
   },
   {

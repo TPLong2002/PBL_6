@@ -9,7 +9,10 @@ function classNames(...classes) {
 
 export default function ChatBox({ chatUser }) {
   const content = [];
-  content.push({ sender: chatUser.userName, text: chatUser.lastContent });
+  if (chatUser.Content)
+    chatUser.Content.map((c) => {
+      content.push({ sender: chatUser.userName, text: c });
+    });
   const [message, setMessage] = useState("");
   const [chat, setChat] = useState(content);
   const chatContainerRef = useRef(null);

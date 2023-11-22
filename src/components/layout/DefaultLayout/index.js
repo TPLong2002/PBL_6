@@ -8,7 +8,7 @@ export default function DefaultLayout({ children }) {
     <div className="flex flex-col flex-row h-[57rem]">
       <Header />
       <div className="container mx-auto p-4 flex">
-        <div className="w-1/5 h-[52rem] bg-white flex-col border-2 border-rose-600">
+        <div className="w-1/5 h-[52rem] bg-white flex-col border-2 border-rose-600 rounded-md">
           <Sidebar></Sidebar>
         </div>
         <Content>{children}</Content>

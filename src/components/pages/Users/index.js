@@ -14,32 +14,37 @@ function App() {
         </button>
       </div>
       <div className="overflow-y-auto scrollbar-hide h-[48.9rem] border border-slate-500">
-        <table className=" w-full border-collapse ">
+        <table className=" w-full ">
           <thead>
-            <tr className="bg-gray-300 text-center">
+            <tr className="bg-gray-300 text-center sticky top-0">
               <td>Tên</td>
               <td>Tài khoảng</td>
               <td>Địa chỉ</td>
               <td>option</td>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="">
             {users.map((user, index) => (
-              <tr className=" items-center text-center " key={index}>
-                <td className="bg-gray-100 ">{user.Name}</td>
-                <td className="bg-gray-100">{user.userName}</td>
-                <td className="bg-gray-100">{user.Adress}</td>
-                <td className="bg-gray-100">
+              <tr
+                className=" border-b transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 dark:hover:bg-neutral-600"
+                key={index}
+              >
+                <td className=" text-center border-r py-4">{user.Name}</td>
+                <td className=" text-center border-r py-4">{user.userName}</td>
+                <td className=" text-center border-r py-4">{user.Adress}</td>
+                <td className=" text-center border-r py-4 space-x-2">
                   <Link
                     to={{
                       pathname: "/users/history",
                       search: `?id=${user.id}`,
                     }}
-                    className="bg-green-300 px-4 py-2 rounded"
+                    className=" bg-gray-100 hover:bg-green-300 px-4 py-2 rounded"
                   >
                     Lịch sử mua hàng
                   </Link>
-                  <button className="bg-red-500 px-4 py-2 rounded">Xóa</button>
+                  <button className="bg-gray-100 hover:bg-red-500 px-4 py-2 rounded">
+                    Xóa
+                  </button>
                 </td>
               </tr>
             ))}

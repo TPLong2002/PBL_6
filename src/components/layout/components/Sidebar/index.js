@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import "../../../../App.css";
-import Avt from "../../../../img/avt/avt.jpg";
+import Avt from "../../../../img/avt/360_F_227450952_KQCMShHPOPebUXklULsKsROk5AvN6H1H.jpg";
 import { Paths } from "./Paths";
 
 function App() {
@@ -10,7 +10,7 @@ function App() {
   };
   return (
     <div className="p-4">
-      <div className=" bg-white flex-col border-2 border-rose-200">
+      <div className=" bg-white flex-col border-2 border-rose-200 rounded-md">
         <div className="justify-center flex">
           <img src={Avt} alt="" className="w-20"></img>
         </div>

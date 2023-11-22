@@ -5,6 +5,8 @@ const Paths = [
   { to: "/users", page: "Users" },
   { to: "/order", page: "Order" },
   { to: "/changebanner", page: "Banner" },
+  { to: "/analysis", page: "Thống kê" },
+  { to: "/review", page: "Đánh giá" },
 ];
 
 export { Paths };
