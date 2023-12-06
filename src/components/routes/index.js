@@ -10,6 +10,9 @@ import Order from "../pages/Order";
 import Banner from "../pages/Banner";
 import Analysis from "../pages/Analysis";
 import Review from "../pages/Review";
+import Catalogs from "../pages/Catalogs";
+import Login from "../pages/Login";
+import LoginLayout from "../layout/LoginLayout";
 const publicRoutes = [
   { path: "/", component: Chat },
   { path: "/chat", component: Chat },
@@ -24,6 +27,8 @@ const publicRoutes = [
   { path: "/changebanner", component: Banner },
   { path: "/analysis", component: Analysis },
   { path: "/review", component: Review },
+  { path: "/catalogs", component: Catalogs },
+  { path: "/login", component: Login, Layout: LoginLayout },
 ];
 const privateRoutes = [];
 export { publicRoutes, privateRoutes };

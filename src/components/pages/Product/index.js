@@ -3,7 +3,7 @@ import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import React from "react";
 import { Link } from "react-router-dom";
-import request from "../../../services/axios/index";
+import request from "../../../services/axios/getProduct";
 import StarRating from "./rating";
 
 function classNames(...classes) {
@@ -23,15 +23,16 @@ export default function App() {
       request
         .get("/itemgroups")
         .then((res) => {
+          console.log(res.data);
           setCatalog(res.data);
           return res;
         })
         .then((res) => {
-          res.data.map((item) => {
-            item.items.map((item) => {
-              setProducts((products) => [...products, item]);
-            });
-          });
+          res.data.map((item) =>
+            item.items.map((item) =>
+              setProducts((products) => [...products, item])
+            )
+          );
         });
     } else {
       request.get(`/items/${selectCatalog}`).then((res) => {
@@ -232,20 +233,28 @@ export default function App() {
               }}
               className="w-[12.7rem] justify-center m-4 border-2 rounded-md border-red-300 transition ease-in-out delay-50 relative hover:-translate-y-1 hover:scale-110 duration-300 shadow-md"
             >
-              <img src={product.imagesItem[0].image} alt="img"></img>
-              <div className="absolute top-2 left-2 bg-red-500 text-white py-1 px-2 rounded-full text-xs">
-                -{product.discount * 100}%
+              <div className="border h-3/5">
+                <img
+                  src={product.imagesItem[0].image}
+                  alt="img"
+                  className="w-full h-full"
+                />
               </div>
-              <div className="text-center mb-5">{product.name}</div>
-              <div className="text-center line-through mb-1 text-[0.9rem] text-gray-500">
-                ₫{product.discount}
-              </div>
-              <div className="text-center mb-2 text-[#dd0105]">
-                ₫{product.sellPrice}
-              </div>
-              <div className="text-center">đã bán: 1</div>
-              <div className="flex justify-center mt-2">
-                <StarRating rating={product.rating} />
+              <div className="h-2/5">
+                <div className="absolute top-2 left-2 bg-red-500 text-white py-1 px-2 rounded-full text-xs">
+                  -{product.discount * 100}%
+                </div>
+                <div className="text-center mb-5">{product.name}</div>
+                <div className="text-center line-through mb-1 text-[0.9rem] text-gray-500">
+                  ₫{product.discount}
+                </div>
+                <div className="text-center mb-2 text-[#dd0105]">
+                  ₫{product.sellPrice}
+                </div>
+                <div className="text-center">đã bán: 1</div>
+                <div className="flex justify-center mt-2">
+                  <StarRating rating={product.rating} />
+                </div>
               </div>
             </Link>
           );

@@ -4,6 +4,7 @@ import Avt from "../../../../img/avt/360_F_227450952_KQCMShHPOPebUXklULsKsROk5Av
 import { Paths } from "./Paths";
 
 function App() {
+  const admin = localStorage.getItem("name");
   const currentPath = useLocation().pathname;
   const isCurrentPath = (path) => {
     return currentPath === path || currentPath.startsWith(path);
@@ -14,7 +15,7 @@ function App() {
         <div className="justify-center flex">
           <img src={Avt} alt="" className="w-20"></img>
         </div>
-        <div className="justify-center flex mt-5">ADMIN</div>
+        <div className="justify-center flex mt-5">{admin}</div>
       </div>
       {Paths.map((path, index) => {
         return (

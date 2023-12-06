@@ -1,18 +1,15 @@
 import { useEffect, useState } from "react";
-import avt from "../../../img/avt/avt.jpg";
 import ChatBox from "./chatBox";
-import { users } from "../Users/users";
+import getChat from "../../../services/axios/getChat";
 
 export default function Chat() {
   const [userID, setUserID] = useState(1);
-  const [chatUser, setChatUser] = useState(
-    users.find((user) => user.id === userID)
-  );
+  const [chatUser, setChatUser] = useState([]);
   useEffect(() => {
-    setChatUser(users.find((user) => user.id === userID));
-    return () => {};
+    getChat(localStorage.getItem("token")).then((res) => {
+      setChatUser(res.data);
+    });
   }, [userID]);
-
   function handlerClick(id) {
     setUserID(id);
   }
@@ -29,19 +26,19 @@ export default function Chat() {
           <h2>Đoạn chat</h2>
           <div className="overflow-y-auto scrollbar-hide h-[45.9rem]">
             <ul className="mt-2 flex flex-col space-y-2">
-              {users.map((user) => (
+              {chatUser.map((user) => (
                 <li key={user.id} onClick={() => handlerClick(user.id)}>
                   <div className="flex flex-row hover:cursor-pointer border-gray-300 p-1 bg-white rounded shadow-md">
                     <div className="w-1/5">
                       <img
-                        src={avt}
+                        src={user.participant.image}
                         alt="Avatar"
                         className="w-16 h-16 rounded-full"
                       />
                     </div>
                     <div className="w-4/5 flex flex-col">
                       <div className="w-1/2 text-xl font-bold">
-                        {user.userName}
+                        {user.participant.firstName} {user.participant.lastName}
                       </div>
                       <div className="w-1/2 pt-2">{user.lastContent}</div>
                     </div>
