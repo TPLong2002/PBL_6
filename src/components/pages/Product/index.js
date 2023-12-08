@@ -29,14 +29,17 @@ export default function App() {
         })
         .then((res) => {
           res.data.map((item) =>
-            item.items.map((item) =>
-              setProducts((products) => [...products, item])
+            item.items.map((list) =>
+              setProducts((products) => [
+                ...products,
+                { ...list, igId: item.id },
+              ])
             )
           );
         });
     } else {
       request.get(`/items/${selectCatalog}`).then((res) => {
-        setProducts(res.data);
+        setProducts({ ...res.data, igId: selectCatalog });
       });
     }
   }, [selectCatalog]);
@@ -229,7 +232,7 @@ export default function App() {
               key={index}
               to={{
                 pathname: "/product/editproduct",
-                search: `?id=${product.id}`,
+                search: `?id=${product.id}&igId=${product.igId}`,
               }}
               className="w-[12.7rem] justify-center m-4 border-2 rounded-md border-red-300 transition ease-in-out delay-50 relative hover:-translate-y-1 hover:scale-110 duration-300 shadow-md"
             >

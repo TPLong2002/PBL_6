@@ -1,22 +1,42 @@
 import { useEffect, useState } from "react";
 import listcatalogs from "../../../services/axios/getcatalogs";
 
-import addCatalog from "../../../services/axios/addCatalog";
+import {
+  addCatalog,
+  editCatalog,
+  delCatalog,
+} from "../../../services/axios/addCatalog";
 
 function App() {
-  const [catalogs, setCatalogs] = useState([]);
-  const [selected, setSelected] = useState({ name: "", image: "" });
+  const [catalogs, setCatalogs] = useState([{ name: "", image: "" }]);
+  const [selected, setSelected] = useState({
+    name: catalogs[0].name,
+    image: catalogs[0].image,
+  });
+
   const [newcatalog, setNewcatalog] = useState({ name: "", image: "" });
   useEffect(() => {
     listcatalogs.then((names) => {
       console.log(names);
       setCatalogs(names);
+      setSelected({
+        id: names[0].id,
+        name: names[0].name,
+        image: names[0].image,
+      });
     });
   }, []);
   const handleselect = (e) => {
-    setSelected({
-      name: catalogs[e.target.value - 1].name,
-      image: catalogs[e.target.value - 1].image,
+    setSelected(() => {
+      for (let i = 0; i < catalogs.length; i++) {
+        if (catalogs[i].id === Number(e.target.value)) {
+          return {
+            id: catalogs[i].id,
+            name: catalogs[i].name,
+            image: catalogs[i].image,
+          };
+        }
+      }
     });
   };
   const handleInputChange = (e) => {
@@ -25,12 +45,27 @@ function App() {
   };
 
   const handleNewCatalog = (e) => {
-    setNewcatalog({ name: e.target.value });
+    setNewcatalog({ ...newcatalog, [e.target.name]: e.target.value });
+  };
+  const handleEdit = async () => {
+    if (window.confirm("Bạn có chắc chắn muốn sửa không?")) {
+      // Thực hiện sửa nếu người dùng đồng ý
+      // await editCatalog(selected, localStorage.getItem("token"));
+    }
+  };
+
+  const handleDel = async (id) => {
+    if (window.confirm("Bạn có chắc chắn muốn xóa không?")) {
+      // Thực hiện xóa nếu người dùng đồng ý
+      await delCatalog(id, localStorage.getItem("token"));
+    }
   };
 
   const handleSubmit = async () => {
-    console.log(newcatalog);
-    // await addCatalog(newcatalog, localStorage.getItem("token"));
+    if (window.confirm("Bạn có chắc chắn muốn thêm mới không?")) {
+      // Thực hiện thêm mới nếu người dùng đồng ý
+      await addCatalog(newcatalog, localStorage.getItem("token"));
+    }
   };
   return (
     <div className="flex flex-col space-y-2">
@@ -71,12 +106,20 @@ function App() {
         onChange={handleInputChange}
         required
       ></input>
-      <div className="mt-auto text-center">
+      <div className="mt-auto space-x-1 text-center">
         <button
           type="submit"
+          onClick={handleEdit}
           className="bg-blue-500 mb-4 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
         >
           Sửa
+        </button>
+        <button
+          type="submit"
+          onClick={() => handleDel(selected.id)}
+          className="bg-red-500 mb-4 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+        >
+          Xóa
         </button>
       </div>
       <label
