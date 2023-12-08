@@ -39,7 +39,11 @@ export default function App() {
         });
     } else {
       request.get(`/items/${selectCatalog}`).then((res) => {
-        setProducts({ ...res.data, igId: selectCatalog });
+        const productsWithIgId = res.data.map((product) => ({
+          ...product,
+          igId: selectCatalog,
+        }));
+        setProducts(productsWithIgId);
       });
     }
   }, [selectCatalog]);
