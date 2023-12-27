@@ -11,10 +11,10 @@ const catalog = axios
     }));
 
     // Hoặc nếu bạn muốn lưu trữ cả đối tượng item cũng như tên
-    const items = res.data.map((item) => ({
-      name: item.name,
-      otherProperty: item.otherProperty,
-    }));
+    // const items = res.data.map((item) => ({
+    //   name: item.name,
+    //   otherProperty: item.otherProperty,
+    // }));
 
     return names; // hoặc return items;
   });

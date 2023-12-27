@@ -1,5 +1,59 @@
-import { reviews } from "./Reviews";
+import { useEffect, useState } from "react";
+import getComments from "../../../services/axios/getComments";
+import getProducById from "../../../services/axios/getProductById";
+import axios from "axios";
+import { set } from "date-fns";
 function Review() {
+  const [comments, setComments] = useState([]);
+  const [update, setUpdate] = useState(true);
+  useEffect(() => {
+    getComments(localStorage.getItem("token")).then((res) => {
+      res.data.map((comment) => {
+        getProducById(comment.itemId).then((res) => {
+          setComments((comments) => [
+            ...comments,
+            {
+              ...comment,
+              name: res.data.name,
+              image: res.data.imagesItem[0].image,
+            },
+          ]);
+        });
+      });
+    });
+  }, [update]);
+  const del = async (id) => {
+    if (window.confirm("Bạn có chắc chắn muốn xóa?")) {
+      await axios
+        .delete("http://api.shopiec.shop/api/comments/comment/" + id, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        })
+        .then((res) => {
+          setUpdate(!update);
+          setComments([]);
+        });
+    }
+  };
+  const comfirm = (id) => {
+    if (window.confirm("Bạn có chắc chắn xác nhận?")) {
+      axios
+        .patch(
+          "http://api.shopiec.shop/api/comments/check/" + id,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+            "Content-Type": "application/json",
+          }
+        )
+        .then((res) => {
+          console.log(res);
+        });
+    }
+  };
   return (
     <div>
       <div className="flex items-center justify-center border-gray-600">
@@ -12,10 +66,11 @@ function Review() {
           Tìm
         </button>
       </div>
-      <div className="overflow-y-auto scrollbar-hide h-[48.9rem] border border-slate-500">
+      <div className="overflow-y-auto scrollbar-hide h-[43rem] border border-slate-500">
         <table className="w-full ">
           <thead className="bg-slate-400">
             <tr className="bg-gray-300 text-center sticky top-0">
+              <td className="text-center">ảnh</td>
               <td className="text-center">Tên sản phẩm</td>
               <td className="text-center">Đánh giá</td>
               <td className="text-center">Số sao</td>
@@ -23,21 +78,30 @@ function Review() {
             </tr>
           </thead>
           <tbody className="border">
-            {reviews.map((review, index) => (
+            {comments.map((comment, index) => (
               <tr
                 key={index}
                 className="border-b transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 dark:hover:bg-neutral-600"
               >
-                <td className="text-center border-r py-4">{review.Name}</td>
                 <td className="text-center border-r py-4">
-                  {review.descriptions}
+                  <img className="w-16 h-16" alt="" src={comment.image}></img>
                 </td>
-                <td className="text-center border-r py-4">{review.rate}</td>
+                <td className="text-center border-r py-4">{comment.name}</td>
+                <td className="text-center border-r py-4">{comment.content}</td>
+                <td className="text-center border-r py-4">{comment.rating}</td>
                 <td className="text-center border-r py-4 space-x-2">
-                  <button className="bg-gray-100 hover:bg-green-300 px-4 py-2 rounded ">
+                  <button
+                    className="bg-gray-100 hover:bg-green-300 px-4 py-2 rounded"
+                    onClick={() => {
+                      comfirm(comment.id);
+                    }}
+                  >
                     Duyệt
                   </button>
-                  <button className="bg-gray-100 hover:bg-red-300 px-4 py-2 rounded ">
+                  <button
+                    className="bg-gray-100 hover:bg-red-300 px-4 py-2 rounded "
+                    onClick={() => del(comment.id)}
+                  >
                     Xóa
                   </button>
                 </td>

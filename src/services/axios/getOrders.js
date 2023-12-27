@@ -1,7 +1,6 @@
 import axios from "axios";
-
-function getAlluser(token, params) {
-  return axios.get("http://api.shopiec.shop/api/users", {
+function getOrders(token, params) {
+  return axios.get("http://api.shopiec.shop/api/orders", {
     params: params,
     headers: {
       Authorization: `Bearer ${token}`,
@@ -9,4 +8,4 @@ function getAlluser(token, params) {
     },
   });
 }
-export default getAlluser;
+export default getOrders;

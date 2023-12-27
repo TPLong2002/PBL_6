@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import listcatalogs from "../../../services/axios/getcatalogs";
+import Color from "./color";
 
 import {
   addCatalog,
@@ -156,6 +157,9 @@ function App() {
         >
           Thêm
         </button>
+      </div>
+      <div>
+        <Color />
       </div>
     </div>
   );

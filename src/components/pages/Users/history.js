@@ -13,7 +13,7 @@ function History() {
     getOrderById(localStorage.getItem("token"), userId).then((res) => {
       setOrders(res.data);
     });
-  }, []);
+  }, [userId]);
   console.log(orders);
   return (
     <div>
@@ -30,12 +30,15 @@ function History() {
             <div className="flex space-x-5 ">
               <div>
                 <img
-                  src={""}
+                  src={
+                    order.orderDetails[0].itemDetailDto.itemDto.imagesItem[0]
+                      .image
+                  }
                   alt=""
                   className="w-[8rem] h-[8rem] rounded shadow-md"
                 ></img>
               </div>
-              <div className="space-y-2">
+              <div className="columns-2 space-y-2">
                 <div>
                   <div className="border rounded bg-white shadow-md p-1">
                     Địa chỉ: {order.deliveryAddress}

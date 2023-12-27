@@ -49,7 +49,7 @@ function App() {
             Sign in to your account
           </h2>
         </div>
-        tunguyen54545@gmail.com 123456
+
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
           <div>
             <label

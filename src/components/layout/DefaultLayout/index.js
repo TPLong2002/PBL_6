@@ -5,10 +5,10 @@ import Content from "../components/Content";
 
 export default function DefaultLayout({ children }) {
   return (
-    <div className="flex flex-col flex-row max-h-[50rem]">
+    <div className="flex flex-col h-[50rem] max-h-[50rem]">
       <Header />
       <div className="container mx-auto p-4 flex">
-        <div className="w-1/5 h-[47rem] max-h-[47rem] bg-white flex-col border-2 border-rose-600 rounded-md">
+        <div className="w-1/5 h-[46rem] max-h-[46rem] bg-white flex-col border-2 border-rose-600 rounded-md">
           <Sidebar></Sidebar>
         </div>
         <Content>{children}</Content>

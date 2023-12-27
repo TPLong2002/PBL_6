@@ -3,16 +3,20 @@ import { Link } from "react-router-dom";
 import ImageUpload from "./uploadimg";
 import getcatalogs from "../../../services/axios/getcatalogs";
 import addProduct from "../../../services/axios/addProduct";
+import { format } from "date-fns";
 
 function AddProduct() {
+  const currentTime = new Date();
+  const formattedTime = format(currentTime, "yyyy-MM-dd HH:mm:ss");
+
   // State để lưu trữ thông tin sản phẩm
   const [product, setProduct] = useState({
     name: "",
     buyPrice: 0,
     sellPrice: 0,
-    igId: 0,
+    igId: 1,
     description: "string",
-    lastUpdateAt: "2023-11-21 09:32:35",
+    lastUpdateAt: formattedTime,
   });
 
   const [banner, setBanner] = useState([]);
@@ -120,7 +124,8 @@ function AddProduct() {
         <select
           name="igId"
           id="igId"
-          onClick={handleInputChange}
+          value={product.igId}
+          onChange={handleInputChange}
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
         >
           {catalogs.map((catalog, index) => (

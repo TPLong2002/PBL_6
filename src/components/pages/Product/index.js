@@ -4,7 +4,8 @@ import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import React from "react";
 import { Link } from "react-router-dom";
 import request from "../../../services/axios/getProduct";
-import StarRating from "./rating";
+import StarRating from "../../../services/other/rating";
+import { set } from "date-fns";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -13,6 +14,7 @@ export default function App() {
   const [selectCatalog, setSelectCatalog] = useState(0);
   const [catalog, setCatalog] = useState([]);
   const [products, setProducts] = useState([]);
+  const [search, setSearch] = useState("");
 
   const handleSelectCatalog = (index) => {
     setSelectCatalog(index);
@@ -23,19 +25,21 @@ export default function App() {
       request
         .get("/itemgroups")
         .then((res) => {
-          console.log(res.data);
           setCatalog(res.data);
-          return res;
+          const itemPromises = res.data.map((item) => {
+            return request
+              .get(`/items/${item.id}`, { params: { page: 1, size: 20 } })
+              .then((res) => {
+                return res.data.map((product) => ({
+                  ...product,
+                  igId: item.id,
+                }));
+              });
+          });
+          return Promise.all(itemPromises);
         })
         .then((res) => {
-          res.data.map((item) =>
-            item.items.map((list) =>
-              setProducts((products) => [
-                ...products,
-                { ...list, igId: item.id },
-              ])
-            )
-          );
+          setProducts(res.flat());
         });
     } else {
       request.get(`/items/${selectCatalog}`).then((res) => {
@@ -47,8 +51,13 @@ export default function App() {
       });
     }
   }, [selectCatalog]);
+  const handleSearch = () => {
+    request.get(`/items/search/${search}`).then((res) => {
+      setProducts(res.data);
+    });
+  };
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col max-h-[46rem]">
       <div className="flex w-full">
         <Menu
           as="div"
@@ -215,10 +224,17 @@ export default function App() {
         <div className="flex items-center justify-center border-gray-600">
           <input
             type="text"
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+            }}
             placeholder="Tìm..."
             className="w-full p-2 border border-gray-400 rounded mr-2"
           />
-          <button className="bg-blue-500 text-white px-4 py-2 rounded transition ease-in-out delay-50 hover:-translate-y-1 hover:scale-105 duration-300">
+          <button
+            onClick={handleSearch}
+            className="bg-blue-500 text-white px-4 py-2 rounded transition ease-in-out delay-50 hover:-translate-y-1 hover:scale-105 duration-300"
+          >
             Tìm
           </button>
           <Link
@@ -238,18 +254,24 @@ export default function App() {
                 pathname: "/product/editproduct",
                 search: `?id=${product.id}&igId=${product.igId}`,
               }}
-              className="w-[12.7rem] justify-center m-4 border-2 rounded-md border-red-300 transition ease-in-out delay-50 relative hover:-translate-y-1 hover:scale-110 duration-300 shadow-md"
+              className="w-[12.7rem] justify-center max-h-[23rem] m-4 border-2 rounded-md border-red-300 transition ease-in-out delay-50 relative hover:-translate-y-1 hover:scale-110 duration-300 shadow-md"
             >
-              <div className="border h-3/5">
+              <div className="border h-1/2">
                 <img
-                  src={product.imagesItem[0].image}
+                  src={
+                    product.imagesItem &&
+                    product.imagesItem[0] &&
+                    product.imagesItem[0].image
+                      ? product.imagesItem[0].image
+                      : ""
+                  }
                   alt="img"
                   className="w-full h-full"
                 />
               </div>
-              <div className="h-2/5">
+              <div className="h-1/2">
                 <div className="absolute top-2 left-2 bg-red-500 text-white py-1 px-2 rounded-full text-xs">
-                  -{product.discount * 100}%
+                  -{product.discount}%
                 </div>
                 <div className="text-center mb-5">{product.name}</div>
                 <div className="text-center line-through mb-1 text-[0.9rem] text-gray-500">

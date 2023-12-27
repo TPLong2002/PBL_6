@@ -1,50 +1,90 @@
-import { Orders } from "./Orders";
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
+import ReactPaginate from "react-paginate";
+import Pagination from "../../../services/other/Pagination";
+
+import getOrders from "../../../services/axios/getOrders";
 function App() {
-  // const statusToColor = [
-  //   {
-  //     1: "bg-gray-200",
-  //     2: "bg-green-400",
-  //     3: "bg-gray-400",
-  //     4: "bg-red-400",
-  //   },
-  //   {
-  //     1: "Đang đợi",
-  //     2: "Thành công",
-  //     3: "Đã hủy",
-  //     4: "Đã boom",
-  //   },
-  // ];
+  const [Orders, setOrders] = useState([]);
+  const [page, setPage] = useState(1);
+  useEffect(() => {
+    getOrders(localStorage.getItem("token"), {
+      page: page,
+      size: 10,
+      sort: "ASC",
+    }).then((res) => {
+      console.log(res.data);
+      setOrders(res.data);
+    });
+  }, [page]);
   function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
   }
-  const [orders, setOders] = useState(Orders);
-  const handlerFillOrder = (status) => {
-    const orders = Orders.filter((Orders) => Orders.status === Number(status));
-    setOders(orders);
+  async function handleSelect(status) {
+    if (status === 0) {
+      getOrders(localStorage.getItem("token"), {
+        page: page,
+        size: 10,
+        sort: "ASC",
+      }).then((res) => {
+        setOrders(res.data);
+      });
+      return;
+    } else {
+      const res = await getOrders(localStorage.getItem("token"), {
+        page: page,
+        size: 10,
+        sort: "ASC",
+      });
+      const data = res.data.filter(
+        (order) => order.orderDeliveryStatusDetails.deliveryStatusId === status
+      );
+      setOrders(data);
+    }
+  }
+  const handleClick = (e) => {
+    setPage(e.selected + 1);
   };
   return (
-    <div>
+    <div className="max-h-[40rem]">
       <div className="font-bold text-[30px]">Đơn hàng</div>
       <div className="flex flex-row p-2 mb-5 bg-gray-50 border border-slate-950">
         <div className="w-1/2 text-center">
           <button
+            onClick={() => handleSelect(0)}
             className="text-left p-1 border rounder bg-gray-200"
-            onClick={() => handlerFillOrder(1)}
+          >
+            Tất cả đơn hàng
+          </button>
+        </div>
+        <div className="w-1/2 text-center">
+          <button
+            onClick={() => handleSelect(1)}
+            className="text-left p-1 border rounder bg-gray-200"
           >
             Đơn hàng đang duyệt
           </button>
         </div>
         <div className="w-1/2 text-center">
-          <button className="text-left p-1 border rounder bg-gray-200">
+          <button
+            onClick={() => handleSelect(2)}
+            className="text-left p-1 border rounder bg-gray-200"
+          >
+            Đơn hàng đang giao
+          </button>
+        </div>
+        <div className="w-1/2 text-center">
+          <button
+            onClick={() => handleSelect(3)}
+            className="text-left p-1 border rounder bg-gray-200"
+          >
             Đơn hàng thành công
           </button>
         </div>
       </div>
-      <div className="space-y-5 max-h-[44.8rem] overflow-y-auto scrollbar-hide ">
-        {orders.map((order, index) => (
+      <div className="space-y-5 max-h-[36.5rem] overflow-y-auto scrollbar-hide ">
+        {Orders.map((order, index) => (
           <div
             key={index}
             className="flex space-x-5 p-2 rounded shadow-md border justify-between bg-gray-100"
@@ -52,25 +92,49 @@ function App() {
             <div className="flex space-x-5 ">
               <div>
                 <img
-                  src={order.img}
+                  src={
+                    order.orderDetails[0].itemDetailDto.itemDto.imagesItem[0]
+                      .image
+                  }
                   alt=""
                   className="w-[8rem] h-[8rem] rounded shadow-md"
                 ></img>
               </div>
-              <div className="space-y-2">
+              <div className="columns-2 space-y-2">
                 <div>
                   <div className="border rounded bg-white shadow-md p-1">
-                    Tên người đặt: {order.byUser.Name}
+                    Địa chỉ: {order.deliveryAddress}
                   </div>
                 </div>
                 <div>
                   <div className="border rounded bg-white shadow-md p-1">
-                    Đia chỉ: {order.byUser.Adress}
+                    totalFee: {order.totalFee}
                   </div>
                 </div>
                 <div>
                   <div className="border rounded bg-white shadow-md p-1">
-                    SĐT: 012345678
+                    deliveryDate: {order.deliveryDate}
+                  </div>
+                </div>
+                <div>
+                  <div className="border rounded bg-white shadow-md p-1">
+                    createAt: {order.createAt}
+                  </div>
+                </div>
+                <div>
+                  <div className="border rounded bg-white shadow-md p-1">
+                    phone: {order.phone}
+                  </div>
+                </div>
+                <div>
+                  <div className="border rounded bg-white shadow-md p-1">
+                    name: {order.name}
+                  </div>
+                </div>
+                <div>
+                  <div className="border rounded bg-white shadow-md p-1">
+                    item name:{" "}
+                    {order.orderDetails[0].itemDetailDto.itemDto.name}
                   </div>
                 </div>
               </div>
@@ -154,6 +218,7 @@ function App() {
           </div>
         ))}
       </div>
+      <Pagination pageCount={10} handlePageClick={handleClick} />
     </div>
   );
 }
