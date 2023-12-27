@@ -1,9 +1,19 @@
 import axios from "axios";
-function getChat(token) {
+function getChats(token) {
+  console.log(token);
   return axios.get("http://api.shopiec.shop/api/chats", {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
 }
-export default getChat;
+function getChatMess(token,chatId) {
+  console.log(token);
+  return axios.get("http://api.shopiec.shop/api/messages/"+chatId, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+}
+export {getChatMess}
+export default getChats;
