@@ -1,6 +1,29 @@
 import { Link } from "react-router-dom";
-import { users } from "./users";
+import { useEffect, useState } from "react";
+import getAlluser from "../../../services/axios/getAlluser";
+
 function App() {
+  const [users, setUsers] = useState([
+    {
+      id: 1,
+      firstName: "huy",
+      lastName: "nguyen",
+      dateOfBirth: "2023-11-01",
+      gender: 1,
+      phone: "09893840384",
+      address: "098 Ton Duc Thang",
+      email: "huy@12345",
+      image:
+        "https://res.cloudinary.com/dte2ps5qs/image/upload/v1700431912/zo74ugufya9ayvuntmvn.png",
+    },
+  ]);
+
+  useEffect(() => {
+    getAlluser(localStorage.getItem("token")).then((res) => {
+      setUsers(res.data);
+    });
+  }, []);
+  console.log(users);
   return (
     <div>
       <div className="flex items-center justify-center border-gray-600">
@@ -17,9 +40,14 @@ function App() {
         <table className=" w-full ">
           <thead>
             <tr className="bg-gray-300 text-center sticky top-0">
-              <td>Tên</td>
-              <td>Tài khoảng</td>
+              <td>avt</td>
+              <td>firstName</td>
+              <td>lastName</td>
+              <td>dateOfBirth</td>
+              <td>gender</td>
+              <td>phone</td>
               <td>Địa chỉ</td>
+              <td>email</td>
               <td>option</td>
             </tr>
           </thead>
@@ -29,9 +57,21 @@ function App() {
                 className=" border-b transition duration-300 ease-in-out hover:bg-neutral-100 dark:border-neutral-500 dark:hover:bg-neutral-600"
                 key={index}
               >
-                <td className=" text-center border-r py-4">{user.Name}</td>
-                <td className=" text-center border-r py-4">{user.userName}</td>
-                <td className=" text-center border-r py-4">{user.Adress}</td>
+                <td className=" text-center border-r py-4">
+                  <img src={user.image} className="w-16 h-16"></img>
+                  {user.id}
+                </td>
+                <td className=" text-center border-r py-4">{user.firstName}</td>
+                <td className=" text-center border-r py-4">{user.lastName}</td>
+                <td className=" text-center border-r py-4">
+                  {user.dateOfBirth}
+                </td>
+                <td className=" text-center border-r py-4">
+                  {user.gender ? "Nam" : "Nữ"}
+                </td>
+                <td className=" text-center border-r py-4">{user.phone}</td>
+                <td className=" text-center border-r py-4">{user.address}</td>
+                <td className=" text-center border-r py-4">{user.email}</td>
                 <td className=" text-center border-r py-4 space-x-2">
                   <Link
                     to={{
