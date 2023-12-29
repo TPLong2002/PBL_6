@@ -163,7 +163,7 @@ function EditProduct() {
     );
   };
   return (
-    <div className="flex flex-col p-4 space-y-4">
+    <div className="flex flex-col p-4 space-y-4 overflow-y-auto scrollbar-hide max-h-[46rem]">
       <div>
         <div className="flex text-lg font-semibold justify-between">
           <Link to="/product" className="text-blue-500 hover:underline">

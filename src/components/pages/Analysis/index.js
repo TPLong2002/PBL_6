@@ -1,14 +1,18 @@
 import React, { useEffect, useState } from "react";
-import salesData, { SaleDataMonth, SaleDataDay, SaleDataYear } from "./data.js";
+import { SaleDataMonth, SaleDataDay, SaleDataYear } from "./data.js";
 import DateTimePicker from "react-datetime-picker";
 import "react-datetime-picker/dist/DateTimePicker.css";
 import "react-calendar/dist/Calendar.css";
 import "react-clock/dist/Clock.css";
-import { format, set } from "date-fns";
-import { Chart as Chartjs } from "chart.js/auto";
-import { Bar, Line } from "react-chartjs-2";
+import { format } from "date-fns";
+import { Chart as Chartjs, plugins } from "chart.js/auto";
+import { Bar } from "react-chartjs-2";
+import { data } from "autoprefixer";
+import { Link } from "react-router-dom";
+import TopProducts from "./TopProduct.js";
 
 function Analysis() {
+  const [selectChart, setSelectChart] = useState(1);
   const [year, setYear] = useState([2021, 2022]);
   if (!year.includes(Number(new Date().getFullYear()))) {
     setYear([...year, new Date().getFullYear()]);
@@ -20,53 +24,49 @@ function Analysis() {
   ];
   const [time, setTime] = useState({ year: 2023, month: 12 });
 
-  // const [startTime, setStartTime] = useState(new Date("2023-12-09T13:26:08"));
-  // const [endTime, setEndTime] = useState(new Date("2023-12-09T14:36:41"));
   const [startTime, setStartTime] = useState(new Date("2023-01-01T00:00:00"));
   const [endTime, setEndTime] = useState(new Date("2023-12-31T23:59:59"));
-  // console.log(
-  //   format(startTime, "yyyy-MM-dd'T'HH:mm:ss"),
-  //   format(endTime, "yyyy-MM-dd'T'HH:mm:ss")
-  // );
 
   const [chartMonth, setChartMonth] = useState({
-    labels: [],
-    datasets: [
-      {
-        label: "Population (millions)",
-        backgroundColor: [
-          "#3e95cd",
-          "#8e5ea2",
-          "#3cba9f",
-          "#e8c3b9",
-          "#c45850",
-        ],
-        data: [],
-      },
-    ],
+    data: {
+      labels: [],
+      datasets: [
+        {
+          label: "Population (millions)",
+          backgroundColor: ["#3e95cd"],
+          data: [],
+        },
+      ],
+    },
+    topProducts: [],
   });
   const [chartYear, setChartYear] = useState({
-    labels: [],
-    datasets: [
-      {
-        label: "year",
-        backgroundColor: ["#3e95cd"],
-        data: [],
-      },
-    ],
+    data: {
+      labels: [],
+      datasets: [
+        {
+          label: "year",
+          backgroundColor: ["#3e95cd"],
+          data: [],
+        },
+      ],
+    },
+    topProducts: [],
   });
   const [chartDay, setChartDay] = useState({
-    labels: [],
-    datasets: [
-      {
-        label: "DAYS",
-        backgroundColor: ["#3e95cd"],
-        data: [],
-      },
-    ],
+    data: {
+      labels: [],
+      datasets: [
+        {
+          label: "DAYS",
+          backgroundColor: ["#3e95cd"],
+          data: [],
+        },
+      ],
+    },
+    topProducts: [],
   });
   useEffect(() => {
-    console.log(time.year);
     SaleDataMonth(
       format(new Date(`${time.year}-01-01T00:00:00`), "yyyy-MM-dd'T'HH:mm:ss"),
       format(new Date(`${time.year}-12-31T23:59:59`), "yyyy-MM-dd'T'HH:mm:ss"),
@@ -111,7 +111,6 @@ function Analysis() {
     const { name, value } = e.target;
     setTime({ ...time, [name]: value });
   };
-  console.log(time);
   return (
     <div className="overflow-y-auto scrollbar-hide max-h-[45rem]">
       <div className="text-2xl font-bold">Sales Dashboard</div>
@@ -152,7 +151,31 @@ function Analysis() {
             ))}
           </select>
         </div>
-        <div className="w-full ">
+        <button
+          onClick={() => setSelectChart(1)}
+          className={`ml-2  text-white px-2 py-2 rounded ${
+            selectChart == 1 ? "bg-red-500" : "bg-blue-500"
+          } transition ease-in-out delay-50  hover:-translate-y-1 hover:scale-105 duration-300`}
+        >
+          Năm
+        </button>
+        <button
+          onClick={() => setSelectChart(2)}
+          className={`ml-2  text-white px-2 py-2 rounded ${
+            selectChart == 2 ? "bg-red-500" : "bg-blue-500"
+          } transition ease-in-out delay-50  hover:-translate-y-1 hover:scale-105 duration-300`}
+        >
+          Tháng
+        </button>
+        <button
+          onClick={() => setSelectChart(3)}
+          className={`ml-2  text-white px-2 py-2 rounded ${
+            selectChart == 3 ? "bg-red-500" : "bg-blue-500"
+          } transition ease-in-out delay-50  hover:-translate-y-1 hover:scale-105 duration-300`}
+        >
+          Ngày
+        </button>
+        <div className="w-1/2 ">
           <DateTimePicker value={startTime} onChange={setStartTime} />
           <DateTimePicker value={endTime} onChange={setEndTime} />
           <button className="ml-2 bg-blue-500 text-white px-2 py-2 rounded transition ease-in-out delay-50 hover:-translate-y-1 hover:scale-105 duration-300">
@@ -160,18 +183,39 @@ function Analysis() {
           </button>
         </div>
       </div>
-      <div className="h-[45rem] flex flex-col">
+
+      <div className="h-[45rem] flex flex-col mt-2">
         <div className="flex space-x-2">
-          <div className="w-1/3">
-            <Bar data={chartYear} />
-          </div>
           <div className="w-2/3">
-            <Bar data={chartMonth} />
-          </div>
-        </div>
-        <div className="flex">
-          <div className="w-2/3">
-            <Bar data={chartDay} />
+            {selectChart == 1 && (
+              <Bar
+                className="border-2 rounded-md shadow-md"
+                data={chartYear.data}
+              />
+            )}
+
+            {selectChart == 2 && (
+              <Bar
+                className="border-2 rounded-md shadow-md"
+                data={chartMonth.data}
+              />
+            )}
+
+            {selectChart == 3 && (
+              <Bar
+                className="border-2 rounded-md shadow-md"
+                data={chartDay.data}
+              />
+            )}
+            {selectChart == 1 && chartMonth.topProducts.length > 0 && (
+              <TopProducts products={chartYear.topProducts} />
+            )}
+            {selectChart == 2 && chartMonth.topProducts.length > 0 && (
+              <TopProducts products={chartMonth.topProducts} />
+            )}
+            {selectChart == 3 && chartMonth.topProducts.length > 0 && (
+              <TopProducts products={chartDay.topProducts} />
+            )}
           </div>
           <div className="w-1/3"></div>
         </div>

@@ -1,9 +1,39 @@
 import revenue from "../../../services/axios/revenue";
 import { format } from "date-fns";
 
+function count(products) {
+  const countProduct = [];
+  products.forEach((item) => {
+    if (countProduct.length === 0) {
+      countProduct.push({
+        id: item.id,
+        name: item.name,
+        count: 1,
+      });
+    } else {
+      var check = false;
+      countProduct.forEach((element) => {
+        if (element.id === item.id) {
+          element.count++;
+          check = true;
+        }
+      });
+      if (!check) {
+        countProduct.push({
+          id: item.id,
+          name: item.name,
+          count: 1,
+        });
+      }
+    }
+  });
+  return countProduct;
+}
 export async function SaleDataMonth(startTime, endTime) {
   const res = await revenue(startTime, endTime, localStorage.getItem("token"));
+  console.log(res.data);
   // xử lý dữ liệu
+  const topProduct = [];
   const MONTHS = [
     { id: 1, name: "Tháng 1" },
     { id: 2, name: "Tháng 2" },
@@ -29,6 +59,10 @@ export async function SaleDataMonth(startTime, endTime) {
     res.data.map((item) => {
       if (element.id === Number(format(new Date(item.createAt), "MM"))) {
         if (item.orderDetails[0].itemDetailDto.itemDto.sellPrice) {
+          topProduct.push({
+            id: item.orderDetails[0].itemDetailDto.itemDto.id,
+            name: item.orderDetails[0].itemDetailDto.itemDto.name,
+          });
           dataOfRevenueMonth +=
             item.orderDetails[0].itemDetailDto.itemDto.sellPrice -
             item.orderDetails[0].itemDetailDto.itemDto.buyPrice;
@@ -41,17 +75,19 @@ export async function SaleDataMonth(startTime, endTime) {
     revenueMonth.push(dataOfRevenueMonth);
   });
   return {
-    labels: MONTHS.map((item) => item.name),
-    datasets: [
-      { label: "Sales", data: salesMonth, backgroundColor: ["#3e95cd"] },
-      { label: "Revenue", data: revenueMonth, backgroundColor: ["Green"] },
-    ],
+    data: {
+      labels: MONTHS.map((item) => item.name),
+      datasets: [
+        { label: "Sales", data: salesMonth, backgroundColor: ["#3e95cd"] },
+        { label: "Revenue", data: revenueMonth, backgroundColor: ["Green"] },
+      ],
+    },
+    topProducts: count(topProduct).sort((a, b) => b.count - a.count),
   };
 }
 export async function SaleDataDay(startTime, endTime, DAYS) {
-  console.log(startTime, endTime);
   const res = await revenue(startTime, endTime, localStorage.getItem("token"));
-  console.log(res.data);
+  const topProduct = [];
   // const DAYS = [
   //   1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
   //   22, 23, 24, 25, 26, 27, 28, 29, 30, 31,
@@ -66,6 +102,10 @@ export async function SaleDataDay(startTime, endTime, DAYS) {
     res.data.map((item) => {
       if (element === Number(format(new Date(item.createAt), "dd"))) {
         if (item.orderDetails[0].itemDetailDto.itemDto.sellPrice) {
+          topProduct.push({
+            id: item.orderDetails[0].itemDetailDto.itemDto.id,
+            name: item.orderDetails[0].itemDetailDto.itemDto.name,
+          });
           dataOfRevenueDay +=
             item.orderDetails[0].itemDetailDto.itemDto.sellPrice -
             item.orderDetails[0].itemDetailDto.itemDto.buyPrice;
@@ -78,17 +118,20 @@ export async function SaleDataDay(startTime, endTime, DAYS) {
     revenueDay.push(dataOfRevenueDay);
   });
   return {
-    labels: DAYS.map((item) => item),
-    datasets: [
-      { label: "Sales", data: salesDay, backgroundColor: ["#3e95cd"] },
-      { label: "Revenue", data: revenueDay, backgroundColor: ["Green"] },
-    ],
+    data: {
+      labels: DAYS.map((item) => item),
+      datasets: [
+        { label: "Sales", data: salesDay, backgroundColor: ["#3e95cd"] },
+        { label: "Revenue", data: revenueDay, backgroundColor: ["Green"] },
+      ],
+    },
+    topProducts: count(topProduct).sort((a, b) => b.count - a.count),
   };
 }
 export async function SaleDataYear(startTime, endTime, YEARS) {
-  console.log(startTime, endTime);
   const res = await revenue(startTime, endTime, localStorage.getItem("token"));
-  console.log(res.data);
+  const topProduct = [];
+
   const revenueYear = [];
   var dataOfRevenueYear = 0;
   const salesYear = [];
@@ -99,6 +142,10 @@ export async function SaleDataYear(startTime, endTime, YEARS) {
     res.data.map((item) => {
       if (element === Number(format(new Date(item.createAt), "yyyy"))) {
         if (item.orderDetails[0].itemDetailDto.itemDto.sellPrice) {
+          topProduct.push({
+            id: item.orderDetails[0].itemDetailDto.itemDto.id,
+            name: item.orderDetails[0].itemDetailDto.itemDto.name,
+          });
           dataOfRevenueYear +=
             item.orderDetails[0].itemDetailDto.itemDto.sellPrice -
             item.orderDetails[0].itemDetailDto.itemDto.buyPrice;
@@ -111,10 +158,13 @@ export async function SaleDataYear(startTime, endTime, YEARS) {
     revenueYear.push(dataOfRevenueYear);
   });
   return {
-    labels: YEARS.map((item) => item),
-    datasets: [
-      { label: "Sales", data: salesYear, backgroundColor: ["#3e95cd"] },
-      { label: "Revenue", data: revenueYear, backgroundColor: ["Green"] },
-    ],
+    data: {
+      labels: YEARS.map((item) => item),
+      datasets: [
+        { label: "Sales", data: salesYear, backgroundColor: ["#3e95cd"] },
+        { label: "Revenue", data: revenueYear, backgroundColor: ["Green"] },
+      ],
+    },
+    topProducts: count(topProduct).sort((a, b) => b.count - a.count),
   };
 }
