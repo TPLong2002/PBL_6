@@ -56,7 +56,7 @@ export async function SaleDataMonth(startTime, endTime) {
   MONTHS.forEach((element) => {
     dataOfSaleMonth = 0;
     dataOfRevenueMonth = 0;
-    res.data.map((item) => {
+    res.data.forEach((item) => {
       if (element.id === Number(format(new Date(item.createAt), "MM"))) {
         if (item.orderDetails[0].itemDetailDto.itemDto.sellPrice) {
           topProduct.push({
@@ -99,7 +99,7 @@ export async function SaleDataDay(startTime, endTime, DAYS) {
   DAYS.forEach((element) => {
     dataOfSalesDay = 0;
     dataOfRevenueDay = 0;
-    res.data.map((item) => {
+    res.data.forEach((item) => {
       if (element === Number(format(new Date(item.createAt), "dd"))) {
         if (item.orderDetails[0].itemDetailDto.itemDto.sellPrice) {
           topProduct.push({
@@ -139,7 +139,7 @@ export async function SaleDataYear(startTime, endTime, YEARS) {
   YEARS.forEach((element) => {
     dataOfSalesYear = 0;
     dataOfRevenueYear = 0;
-    res.data.map((item) => {
+    res.data.forEach((item) => {
       if (element === Number(format(new Date(item.createAt), "yyyy"))) {
         if (item.orderDetails[0].itemDetailDto.itemDto.sellPrice) {
           topProduct.push({

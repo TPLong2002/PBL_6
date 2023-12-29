@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import ChatBox from "./chatBox";
 import getChats, { getChatMess } from "../../../services/axios/getChat";
-import { da } from "date-fns/locale";
 
 const SockJS = require("sockjs-client");
 const Stomp = require("stompjs");
@@ -74,12 +73,12 @@ export default function Chat() {
           for (const j in temp.get(e)) {
             let count = 0;
             for (const i in map.get(e)) {
-              if (i.time == j.time) {
+              if (i.time === j.time) {
                 count++;
                 break;
               }
             }
-            if (count == 0) {
+            if (count === 0) {
               map.get(e).push(j);
             }
           }
@@ -88,15 +87,15 @@ export default function Chat() {
       setMessage(map.get(userID));
     }
     fetch();
-  }, [data, message]);
+  }, [data, message, userID]);
   useEffect(() => {
     chatUser.forEach((e) => {
-      if (e.id == userID) {
+      if (e.id === userID) {
         setImage(e.participant.image);
         setFirstName(e.participant.firstName);
         setLastName(e.participant.lastName);
         setReceivedId(
-          e.participantId1 != JSON.parse(localStorage.getItem("user")).id
+          e.participantId1 !== JSON.parse(localStorage.getItem("user")).id
             ? e.participantId1
             : e.participantId2
         );

@@ -1,7 +1,7 @@
 import { Fragment, useEffect, useState } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
-import ReactPaginate from "react-paginate";
+
 import Pagination from "../../../services/other/Pagination";
 
 import getOrders from "../../../services/axios/getOrders";

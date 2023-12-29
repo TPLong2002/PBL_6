@@ -5,10 +5,8 @@ import "react-datetime-picker/dist/DateTimePicker.css";
 import "react-calendar/dist/Calendar.css";
 import "react-clock/dist/Clock.css";
 import { format } from "date-fns";
-import { Chart as Chartjs, plugins } from "chart.js/auto";
+import "chart.js/auto";
 import { Bar } from "react-chartjs-2";
-import { data } from "autoprefixer";
-import { Link } from "react-router-dom";
 import TopProducts from "./TopProduct.js";
 
 function Analysis() {
