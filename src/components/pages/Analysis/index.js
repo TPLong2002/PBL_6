@@ -152,7 +152,7 @@ function Analysis() {
         <button
           onClick={() => setSelectChart(1)}
           className={`ml-2  text-white px-2 py-2 rounded ${
-            selectChart == 1 ? "bg-red-500" : "bg-blue-500"
+            selectChart === 1 ? "bg-red-500" : "bg-blue-500"
           } transition ease-in-out delay-50  hover:-translate-y-1 hover:scale-105 duration-300`}
         >
           Năm
@@ -160,7 +160,7 @@ function Analysis() {
         <button
           onClick={() => setSelectChart(2)}
           className={`ml-2  text-white px-2 py-2 rounded ${
-            selectChart == 2 ? "bg-red-500" : "bg-blue-500"
+            selectChart === 2 ? "bg-red-500" : "bg-blue-500"
           } transition ease-in-out delay-50  hover:-translate-y-1 hover:scale-105 duration-300`}
         >
           Tháng
@@ -168,7 +168,7 @@ function Analysis() {
         <button
           onClick={() => setSelectChart(3)}
           className={`ml-2  text-white px-2 py-2 rounded ${
-            selectChart == 3 ? "bg-red-500" : "bg-blue-500"
+            selectChart === 3 ? "bg-red-500" : "bg-blue-500"
           } transition ease-in-out delay-50  hover:-translate-y-1 hover:scale-105 duration-300`}
         >
           Ngày
@@ -185,33 +185,33 @@ function Analysis() {
       <div className="h-[45rem] flex flex-col mt-2">
         <div className="flex space-x-2">
           <div className="w-2/3">
-            {selectChart == 1 && (
+            {selectChart === 1 && (
               <Bar
                 className="border-2 rounded-md shadow-md"
                 data={chartYear.data}
               />
             )}
 
-            {selectChart == 2 && (
+            {selectChart === 2 && (
               <Bar
                 className="border-2 rounded-md shadow-md"
                 data={chartMonth.data}
               />
             )}
 
-            {selectChart == 3 && (
+            {selectChart === 3 && (
               <Bar
                 className="border-2 rounded-md shadow-md"
                 data={chartDay.data}
               />
             )}
-            {selectChart == 1 && chartMonth.topProducts.length > 0 && (
+            {selectChart === 1 && chartMonth.topProducts.length > 0 && (
               <TopProducts products={chartYear.topProducts} />
             )}
-            {selectChart == 2 && chartMonth.topProducts.length > 0 && (
+            {selectChart === 2 && chartMonth.topProducts.length > 0 && (
               <TopProducts products={chartMonth.topProducts} />
             )}
-            {selectChart == 3 && chartMonth.topProducts.length > 0 && (
+            {selectChart === 3 && chartMonth.topProducts.length > 0 && (
               <TopProducts products={chartDay.topProducts} />
             )}
           </div>
