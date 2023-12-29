@@ -23,7 +23,7 @@ function App() {
           localStorage.setItem("name", res.data.firstName);
           localStorage.setItem("userId", res.data.id);
           localStorage.setItem("user", JSON.stringify(res.data));
-          navigate("/");
+          navigate("/chat");
         } else {
           alert("Tài khoản này không khả dụng");
         }

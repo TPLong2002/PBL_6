@@ -2,13 +2,12 @@ import { useEffect, useState } from "react";
 import getComments from "../../../services/axios/getComments";
 import getProducById from "../../../services/axios/getProductById";
 import axios from "axios";
-import { set } from "date-fns";
 function Review() {
   const [comments, setComments] = useState([]);
   const [update, setUpdate] = useState(true);
   useEffect(() => {
     getComments(localStorage.getItem("token")).then((res) => {
-      res.data.map((comment) => {
+      res.data.forEach((comment) => {
         getProducById(comment.itemId).then((res) => {
           setComments((comments) => [
             ...comments,

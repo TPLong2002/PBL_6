@@ -14,7 +14,7 @@ import Catalogs from "../pages/Catalogs";
 import Login from "../pages/Login";
 import LoginLayout from "../layout/LoginLayout";
 const publicRoutes = [
-  { path: "/", component: Chat },
+  { path: "/", component: Login, Layout: LoginLayout },
   { path: "/chat", component: Chat },
   { path: "/product", component: Product },
   { path: "/test", component: Test },
