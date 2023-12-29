@@ -28,7 +28,6 @@ export default function ChatBox({
   // clearContentMessage();
   const userId = localStorage.getItem("userId");
   const imagee = JSON.parse(localStorage.getItem("user")).image;
-  console.log(imagee);
   const sendMessage = () => {
     var inputMes = document.getElementById("textAreaExample");
     var timeSendMes = format(new Date().getTime(), "yyyy-MM-dd HH:mm:ss");
@@ -41,7 +40,6 @@ export default function ChatBox({
     message.push(mess);
     stompClient.send("/app/chat/" + receivedId, {}, JSON.stringify(mess));
     var contentMessage = document.getElementById("contentMessage");
-    console.log(inputMes.value);
     var div = document.createElement("div");
     div.className = " flex justify-end mb-4   ";
     div.id = receivedId + "div";
@@ -178,7 +176,6 @@ export default function ChatBox({
       >
         {message !== undefined
           ? message.map((message, index) => {
-              console.log(message);
               return message.senderId != userId ? (
                 <div className="flex flex-col">
                   <p className="flex justify-start mb-1 text-xs text-gray-400">
