@@ -65,10 +65,7 @@ function ImageUpload({ onImageUpload, itemId }) {
 
   return (
     <div>
-      <div
-        {...getRootProps()}
-        className="border-2 border-2 p-4 hover:cursor-pointer"
-      >
+      <div {...getRootProps()} className="border-2 p-4 hover:cursor-pointer">
         <input {...getInputProps()} />
         <p>Kéo và thả hoặc nhấn để tải lên ảnh</p>
       </div>
