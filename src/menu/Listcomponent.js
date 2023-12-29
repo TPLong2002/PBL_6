@@ -12,8 +12,8 @@ export default function List() {
     <div>
       <ul style={{ listStyleType: "none" }}>
         {List.map((l) => (
-          <li>
-            <button key={l.id}>{l.name}</button>
+          <li className={l.id == 1 ? "bg-gray-100" : "bg-red-100"} key={l.id}>
+            {l.name}
           </li>
         ))}
       </ul>
