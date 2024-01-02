@@ -6,15 +6,17 @@ import Pagination from "../../../services/other/Pagination";
 
 import getOrders from "../../../services/axios/getOrders";
 function App() {
+  const [pages, setPages] = useState(0);
+  var size = 10;
   const [Orders, setOrders] = useState([]);
   const [page, setPage] = useState(1);
   useEffect(() => {
     getOrders(localStorage.getItem("token"), {
       page: page,
-      size: 10,
+      size: size,
       sort: "ASC",
     }).then((res) => {
-      console.log(res.data);
+      setPages(Math.ceil(res.headers["x-total-order"] / size));
       setOrders(res.data);
     });
   }, [page]);
@@ -218,7 +220,7 @@ function App() {
           </div>
         ))}
       </div>
-      <Pagination pageCount={10} handlePageClick={handleClick} />
+      <Pagination pageCount={pages} handlePageClick={handleClick} />
     </div>
   );
 }

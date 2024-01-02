@@ -1,7 +1,7 @@
 import axios from "axios";
 
 function getAlluser(startDate, endDate, token) {
-  return axios.post(
+  const res = axios.post(
     "http://api.shopiec.shop/api/orders/user/statistical",
     { startDate, endDate },
     {
@@ -11,5 +11,7 @@ function getAlluser(startDate, endDate, token) {
       },
     }
   );
+  // console.log(res.then((res) => console.log(res)));
+  return res;
 }
 export default getAlluser;

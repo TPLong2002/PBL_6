@@ -6,12 +6,13 @@ import "react-calendar/dist/Calendar.css";
 import "react-clock/dist/Clock.css";
 import { format } from "date-fns";
 import "chart.js/auto";
-import { Bar } from "react-chartjs-2";
+import { Bar, Doughnut, Pie } from "react-chartjs-2";
+import ChartDataLabels from "chartjs-plugin-datalabels";
 import TopProducts from "./TopProduct.js";
 
 function Analysis() {
   const [selectChart, setSelectChart] = useState(1);
-  const [year, setYear] = useState([2021, 2022]);
+  const [year, setYear] = useState([2021, 2022, 2023]);
   if (!year.includes(Number(new Date().getFullYear()))) {
     setYear([...year, new Date().getFullYear()]);
   }
@@ -20,7 +21,10 @@ function Analysis() {
     1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
     22, 23, 24, 25, 26, 27, 28, 29, 30, 31,
   ];
-  const [time, setTime] = useState({ year: 2023, month: 12 });
+  const [time, setTime] = useState({
+    year: Number(format(new Date(), "yyyy")),
+    month: Number(format(new Date(), "MM")),
+  });
 
   const [startTime, setStartTime] = useState(new Date("2023-01-01T00:00:00"));
   const [endTime, setEndTime] = useState(new Date("2023-12-31T23:59:59"));
@@ -37,6 +41,17 @@ function Analysis() {
       ],
     },
     topProducts: [],
+    topUsers: [],
+    dataOfPayment: {
+      labels: [],
+      datasets: [
+        {
+          label: "Population (millions)",
+          backgroundColor: ["#3e95cd"],
+          data: [],
+        },
+      ],
+    },
   });
   const [chartYear, setChartYear] = useState({
     data: {
@@ -50,6 +65,17 @@ function Analysis() {
       ],
     },
     topProducts: [],
+    topUsers: [],
+    dataOfPayment: {
+      labels: [],
+      datasets: [
+        {
+          label: "Population (millions)",
+          backgroundColor: ["#3e95cd"],
+          data: [],
+        },
+      ],
+    },
   });
   const [chartDay, setChartDay] = useState({
     data: {
@@ -63,7 +89,37 @@ function Analysis() {
       ],
     },
     topProducts: [],
+    topUsers: [],
+    dataOfPayment: {
+      labels: [],
+      datasets: [
+        {
+          label: "Population (millions)",
+          backgroundColor: ["#3e95cd"],
+          data: [],
+        },
+      ],
+    },
   });
+  var options = {
+    tooltips: {
+      enabled: false,
+    },
+    plugins: {
+      datalabels: {
+        formatter: (value, ctx) => {
+          const datapoints = ctx.chart.data.datasets[0].data;
+          const total = datapoints.reduce(
+            (total, datapoint) => total + datapoint,
+            0
+          );
+          const percentage = (value / total) * 100;
+          return percentage.toFixed(2) + "%";
+        },
+        color: "#fff",
+      },
+    },
+  };
   useEffect(() => {
     SaleDataMonth(
       format(new Date(`${time.year}-01-01T00:00:00`), "yyyy-MM-dd'T'HH:mm:ss"),
@@ -110,7 +166,7 @@ function Analysis() {
     setTime({ ...time, [name]: value });
   };
   return (
-    <div className="overflow-y-auto scrollbar-hide max-h-[45rem]">
+    <div className=" max-h-[45rem]">
       <div className="text-2xl font-bold">Sales Dashboard</div>
       <div className="flex space-x-1 items-center">
         <div className="w-[9rem] flex items-center space-x-1">
@@ -173,16 +229,16 @@ function Analysis() {
         >
           Ngày
         </button>
-        <div className="w-1/2 ">
+        {/* <div className="w-1/2 ">
           <DateTimePicker value={startTime} onChange={setStartTime} />
           <DateTimePicker value={endTime} onChange={setEndTime} />
           <button className="ml-2 bg-blue-500 text-white px-2 py-2 rounded transition ease-in-out delay-50 hover:-translate-y-1 hover:scale-105 duration-300">
             Tìm
           </button>
-        </div>
+        </div> */}
       </div>
 
-      <div className="h-[45rem] flex flex-col mt-2">
+      <div className="h-[38rem] flex flex-col mt-2">
         <div className="flex space-x-2">
           <div className="w-2/3">
             {selectChart === 1 && (
@@ -205,17 +261,95 @@ function Analysis() {
                 data={chartDay.data}
               />
             )}
-            {selectChart === 1 && chartMonth.topProducts.length > 0 && (
-              <TopProducts products={chartYear.topProducts} />
-            )}
-            {selectChart === 2 && chartMonth.topProducts.length > 0 && (
-              <TopProducts products={chartMonth.topProducts} />
-            )}
-            {selectChart === 3 && chartMonth.topProducts.length > 0 && (
-              <TopProducts products={chartDay.topProducts} />
-            )}
+            <div className="flex space-x-3">
+              <div className="flex flex-col mt-3 w-1/2">
+                <label className="block text-sm font-medium text-gray-900 dark:text-white">
+                  Sản phẩn bán chạy
+                </label>
+                {selectChart === 1 && chartMonth.topProducts.length > 0 && (
+                  <TopProducts
+                    products={chartYear.topProducts}
+                    url={"/product/editproduct"}
+                  />
+                )}
+                {selectChart === 2 && chartMonth.topProducts.length > 0 && (
+                  <TopProducts
+                    products={chartMonth.topProducts}
+                    url={"/product/editproduct"}
+                  />
+                )}
+                {selectChart === 3 && chartMonth.topProducts.length > 0 && (
+                  <TopProducts
+                    products={chartDay.topProducts}
+                    url={"/product/editproduct"}
+                  />
+                )}
+              </div>
+              <div className="flex flex-col mt-3 w-1/2">
+                <label className="block text-sm font-medium text-gray-900 dark:text-white">
+                  Khách hàng tiềm năng
+                </label>
+                {selectChart === 1 && chartMonth.topUsers.length > 0 && (
+                  <TopProducts
+                    products={chartYear.topUsers}
+                    url="/users/history"
+                  />
+                )}
+                {selectChart === 2 && chartMonth.topUsers.length > 0 && (
+                  <TopProducts products={chartMonth.topUsers} />
+                )}
+                {selectChart === 3 && chartMonth.topUsers.length > 0 && (
+                  <TopProducts products={chartDay.topUsers} />
+                )}
+              </div>
+            </div>
           </div>
-          <div className="w-1/3"></div>
+          <div className="w-1/3">
+            <div className="flex flex-col w-3/4 h-1/2">
+              <label className="block text-sm font-medium text-gray-900 dark:text-white pb-2">
+                Khách hàng tiềm năng
+              </label>
+              {selectChart === 1 && (
+                <Doughnut
+                  className="border-2 rounded-md shadow-md"
+                  data={chartYear.dataOfPayment}
+                  options={options}
+                  plugins={[ChartDataLabels]}
+                />
+              )}
+            </div>
+            <div className="pt-2 flex flex-col w-3/4 h-1/2">
+              <label className="block text-sm font-medium text-gray-900 dark:text-white pb-2">
+                Khách hàng tiềm năng
+              </label>
+              {selectChart === 1 && (
+                <Doughnut
+                  className="border-2 rounded-md shadow-md"
+                  data={chartYear.dataOfPayment}
+                  options={options}
+                  plugins={[ChartDataLabels]}
+                />
+              )}
+
+              {selectChart === 2 && (
+                <Doughnut
+                  className="border-2 rounded-md shadow-md"
+                  data={chartMonth.dataOfPayment}
+                  options={options}
+                  plugins={[ChartDataLabels]}
+                />
+              )}
+
+              {selectChart === 3 && (
+                <Doughnut
+                  className="border-2 rounded-md shadow-md"
+                  data={chartDay.dataOfPayment}
+                  options={options}
+                  plugins={[ChartDataLabels]}
+                />
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </div>

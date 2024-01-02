@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
-function TopProducts({ products }) {
+function TopProducts({ products, url }) {
   return (
-    <div className="mt-5 overflow-y-auto scrollbar-hide max-h-[30rem]">
-      <table className="border-2 rounded-md shadow-md ">
-        <thead className="bg-gray-100">
+    <div className="mt-1 overflow-y-auto scrollbar-hide shadow-md max-h-[14rem]">
+      <table className="w-full">
+        <thead className="bg-gray-100 text-center sticky top-0">
           <tr>
             <td>Name</td>
             <td>Số lượng</td>
@@ -12,17 +12,17 @@ function TopProducts({ products }) {
         <tbody>
           {products.map((item, index) => (
             <tr key={index}>
-              <td>
+              <td className="text-center px-2 border-r">
                 <Link
                   to={{
-                    pathname: "/product/editproduct",
+                    pathname: url,
                     search: `?id=${item.id}`,
                   }}
                 >
                   {item.name}
                 </Link>{" "}
               </td>
-              <td>{item.count}</td>
+              <td className="text-center border-r">{item.count}</td>
             </tr>
           ))}
         </tbody>

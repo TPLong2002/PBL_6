@@ -20,13 +20,17 @@ function App() {
     },
   ]);
   const [page, setPage] = useState(1);
+  const [pages, setPages] = useState(1);
+  const size = 10;
 
   useEffect(() => {
     getAlluser(localStorage.getItem("token"), {
       page: page,
-      size: 10,
+      size: size,
       sort: "ASC",
     }).then((res) => {
+      setPages(Math.ceil(res.headers["x-total"] / size));
+      console.log(res);
       setUsers(res.data);
     });
   }, [page]);
@@ -47,7 +51,7 @@ function App() {
   function handleSubmit(index) {
     const userToUpdate = { ...users[index] };
     delete userToUpdate.id;
-    console.log(userToUpdate);
+    console.log("user", userToUpdate);
 
     axios.put(
       "http://api.shopiec.shop/api/users/user/" + users[index].id,
@@ -173,12 +177,12 @@ function App() {
                     >
                       Lịch sử mua hàng
                     </Link>
-                    <button
+                    {/* <button
                       onClick={() => handleSubmit(index)}
                       className="w-fit bg-gray-100 hover:bg-blue-500 px-2 py-2 rounded"
                     >
                       Cập nhật
-                    </button>
+                    </button> */}
                     <button className="w-fit bg-gray-100 hover:bg-red-500 px-2 py-2 rounded">
                       Xóa
                     </button>
@@ -189,7 +193,7 @@ function App() {
           </tbody>
         </table>
       </div>
-      <Pagination pageCount={10} handlePageClick={handleClick} />
+      <Pagination pageCount={pages} handlePageClick={handleClick} />
     </div>
   );
 }

@@ -51,7 +51,7 @@ function App() {
   const handleEdit = async () => {
     if (window.confirm("Bạn có chắc chắn muốn sửa không?")) {
       // Thực hiện sửa nếu người dùng đồng ý
-      // await editCatalog(selected, localStorage.getItem("token"));
+      await editCatalog(selected, localStorage.getItem("token"));
     }
   };
 

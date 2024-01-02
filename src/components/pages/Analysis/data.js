@@ -29,11 +29,71 @@ function count(products) {
   });
   return countProduct;
 }
+function countUser(users) {
+  const countUsers = [];
+  users.forEach((item) => {
+    if (countUsers.length === 0) {
+      countUsers.push({
+        id: item.customerId,
+        name: item.name,
+        count: 1,
+      });
+    } else {
+      var check = false;
+      countUsers.forEach((element) => {
+        if (element.id === item.customerId) {
+          element.count++;
+          check = true;
+        }
+      });
+      if (!check) {
+        countUsers.push({
+          id: item.customerId,
+          name: item.name,
+          count: 1,
+        });
+      }
+    }
+  });
+  return countUsers;
+}
+function countPayment(products) {
+  const countProduct = [];
+  products.forEach((item) => {
+    if (countProduct.length === 0) {
+      countProduct.push({
+        paymentMethodId: item.paymentMethodId,
+        count: item.totalFee,
+      });
+    } else {
+      var check = false;
+      countProduct.forEach((element) => {
+        if (element.paymentMethodId === item.paymentMethodId) {
+          element.count += item.totalFee;
+          check = true;
+        }
+      });
+      if (!check) {
+        countProduct.push({
+          paymentMethodId: item.paymentMethodId,
+          count: item.totalFee,
+        });
+      }
+    }
+  });
+  return countProduct;
+}
+const Payment = [
+  { id: 1, name: "Thanh toán khi nhận hàng" },
+  { id: 2, name: "Thanh toán qua Paypal" },
+  { id: 3, name: "Thanh toán qua ví điện tử VNPay" },
+];
 export async function SaleDataMonth(startTime, endTime) {
   const res = await revenue(startTime, endTime, localStorage.getItem("token"));
-  console.log(res.data);
   // xử lý dữ liệu
   const topProduct = [];
+  const topUser = [];
+  const totalOfPayment = [];
   const MONTHS = [
     { id: 1, name: "Tháng 1" },
     { id: 2, name: "Tháng 2" },
@@ -63,6 +123,8 @@ export async function SaleDataMonth(startTime, endTime) {
             id: item.orderDetails[0].itemDetailDto.itemDto.id,
             name: item.orderDetails[0].itemDetailDto.itemDto.name,
           });
+          topUser.push(item);
+          totalOfPayment.push(item);
           dataOfRevenueMonth +=
             item.orderDetails[0].itemDetailDto.itemDto.sellPrice -
             item.orderDetails[0].itemDetailDto.itemDto.buyPrice;
@@ -74,6 +136,18 @@ export async function SaleDataMonth(startTime, endTime) {
     salesMonth.push(dataOfSaleMonth);
     revenueMonth.push(dataOfRevenueMonth);
   });
+  const feeOfPayment = countPayment(totalOfPayment)
+    .sort((a, b) => a.paymentMethodId - b.paymentMethodId)
+    .map((item) => item);
+
+  feeOfPayment.forEach((item) => {
+    Payment.forEach((element) => {
+      if (item.paymentMethodId === element.id) {
+        item.name = element.name;
+      }
+    });
+  });
+  console.log("fee", feeOfPayment);
   return {
     data: {
       labels: MONTHS.map((item) => item.name),
@@ -83,11 +157,24 @@ export async function SaleDataMonth(startTime, endTime) {
       ],
     },
     topProducts: count(topProduct).sort((a, b) => b.count - a.count),
+    topUsers: countUser(topUser).sort((a, b) => b.count - a.count),
+    dataOfPayment: {
+      labels: feeOfPayment.map((item) => item.name),
+      datasets: [
+        {
+          label: "Doanh thu",
+          data: feeOfPayment.map((item) => item.count),
+          backgroundColor: ["Green", "#3e95cd", "red"],
+        },
+      ],
+    },
   };
 }
 export async function SaleDataDay(startTime, endTime, DAYS) {
   const res = await revenue(startTime, endTime, localStorage.getItem("token"));
   const topProduct = [];
+  const topUser = [];
+  const totalOfPayment = [];
   // const DAYS = [
   //   1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
   //   22, 23, 24, 25, 26, 27, 28, 29, 30, 31,
@@ -106,6 +193,8 @@ export async function SaleDataDay(startTime, endTime, DAYS) {
             id: item.orderDetails[0].itemDetailDto.itemDto.id,
             name: item.orderDetails[0].itemDetailDto.itemDto.name,
           });
+          topUser.push(item);
+          totalOfPayment.push(item);
           dataOfRevenueDay +=
             item.orderDetails[0].itemDetailDto.itemDto.sellPrice -
             item.orderDetails[0].itemDetailDto.itemDto.buyPrice;
@@ -117,6 +206,17 @@ export async function SaleDataDay(startTime, endTime, DAYS) {
     salesDay.push(dataOfSalesDay);
     revenueDay.push(dataOfRevenueDay);
   });
+  const feeOfPayment = countPayment(totalOfPayment)
+    .sort((a, b) => a.paymentMethodId - b.paymentMethodId)
+    .map((item) => item);
+
+  feeOfPayment.forEach((item) => {
+    Payment.forEach((element) => {
+      if (item.paymentMethodId === element.id) {
+        item.name = element.name;
+      }
+    });
+  });
   return {
     data: {
       labels: DAYS.map((item) => item),
@@ -126,11 +226,24 @@ export async function SaleDataDay(startTime, endTime, DAYS) {
       ],
     },
     topProducts: count(topProduct).sort((a, b) => b.count - a.count),
+    topUsers: countUser(topUser).sort((a, b) => b.count - a.count),
+    dataOfPayment: {
+      labels: feeOfPayment.map((item) => item.name),
+      datasets: [
+        {
+          label: "Doanh thu",
+          data: feeOfPayment.map((item) => item.count),
+          backgroundColor: ["Green", "#3e95cd", "red"],
+        },
+      ],
+    },
   };
 }
 export async function SaleDataYear(startTime, endTime, YEARS) {
   const res = await revenue(startTime, endTime, localStorage.getItem("token"));
   const topProduct = [];
+  const topUser = [];
+  const totalOfPayment = [];
 
   const revenueYear = [];
   var dataOfRevenueYear = 0;
@@ -146,6 +259,8 @@ export async function SaleDataYear(startTime, endTime, YEARS) {
             id: item.orderDetails[0].itemDetailDto.itemDto.id,
             name: item.orderDetails[0].itemDetailDto.itemDto.name,
           });
+          topUser.push(item);
+          totalOfPayment.push(item);
           dataOfRevenueYear +=
             item.orderDetails[0].itemDetailDto.itemDto.sellPrice -
             item.orderDetails[0].itemDetailDto.itemDto.buyPrice;
@@ -157,6 +272,17 @@ export async function SaleDataYear(startTime, endTime, YEARS) {
     salesYear.push(dataOfSalesYear);
     revenueYear.push(dataOfRevenueYear);
   });
+  const feeOfPayment = countPayment(totalOfPayment)
+    .sort((a, b) => a.paymentMethodId - b.paymentMethodId)
+    .map((item) => item);
+
+  feeOfPayment.forEach((item) => {
+    Payment.forEach((element) => {
+      if (item.paymentMethodId === element.id) {
+        item.name = element.name;
+      }
+    });
+  });
   return {
     data: {
       labels: YEARS.map((item) => item),
@@ -166,5 +292,16 @@ export async function SaleDataYear(startTime, endTime, YEARS) {
       ],
     },
     topProducts: count(topProduct).sort((a, b) => b.count - a.count),
+    topUsers: countUser(topUser).sort((a, b) => b.count - a.count),
+    dataOfPayment: {
+      labels: feeOfPayment.map((item) => item.name),
+      datasets: [
+        {
+          label: "Doanh thu",
+          data: feeOfPayment.map((item) => item.count),
+          backgroundColor: ["Green", "#3e95cd", "red"],
+        },
+      ],
+    },
   };
 }

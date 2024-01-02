@@ -12,6 +12,7 @@ import Analysis from "../pages/Analysis";
 import Review from "../pages/Review";
 import Catalogs from "../pages/Catalogs";
 import Login from "../pages/Login";
+import Event from "../pages/Event";
 import LoginLayout from "../layout/LoginLayout";
 const publicRoutes = [
   { path: "/", component: Login, Layout: LoginLayout },
@@ -28,6 +29,7 @@ const publicRoutes = [
   { path: "/analysis", component: Analysis },
   { path: "/review", component: Review },
   { path: "/catalogs", component: Catalogs },
+  { path: "/event", component: Event },
   { path: "/login", component: Login, Layout: LoginLayout },
 ];
 const privateRoutes = [];
