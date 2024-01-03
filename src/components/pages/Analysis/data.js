@@ -1,4 +1,5 @@
 import revenue from "../../../services/axios/revenue";
+import listcatalogs from "../../../services/axios/getcatalogs";
 import { format } from "date-fns";
 
 function count(products) {
@@ -83,17 +84,73 @@ function countPayment(products) {
   });
   return countProduct;
 }
+function countIgId(products) {
+  const TotalOfIgId = [];
+  products.forEach((item) => {
+    if (TotalOfIgId.length === 0) {
+      TotalOfIgId.push({
+        igId: item.orderDetails[0].itemDetailDto.itemDto.igId,
+        count: item.orderDetails[0].itemDetailDto.itemDto.sellPrice,
+      });
+    } else {
+      var check = false;
+      TotalOfIgId.forEach((element) => {
+        if (element.igId === item.orderDetails[0].itemDetailDto.itemDto.igId) {
+          element.count += item.orderDetails[0].itemDetailDto.itemDto.sellPrice;
+          check = true;
+        }
+      });
+      if (!check) {
+        TotalOfIgId.push({
+          igId: item.orderDetails[0].itemDetailDto.itemDto.igId,
+          count: item.orderDetails[0].itemDetailDto.itemDto.sellPrice,
+        });
+      }
+    }
+  });
+  return TotalOfIgId;
+}
 const Payment = [
   { id: 1, name: "Thanh toán khi nhận hàng" },
   { id: 2, name: "Thanh toán qua Paypal" },
   { id: 3, name: "Thanh toán qua ví điện tử VNPay" },
 ];
+const getcategory = async (TotalOfIgId) => {
+  const colors = [
+    { id: 1, code: "#666666" },
+    { id: 2, code: "#FF0000" },
+    { id: 3, code: "#00FF00" },
+    { id: 4, code: "#0000FF" },
+    { id: 5, code: "#FFFF00" },
+    { id: 6, code: "#00FFFF" },
+    { id: 7, code: "#FF00FF" },
+    { id: 8, code: "#C0C0C0" },
+    { id: 9, code: "#0099FF" },
+  ];
+  var res = await listcatalogs;
+  res = res.map((item) => ({
+    id: item.id,
+    name: item.name,
+    color: colors.find((color) => color.id === item.id)?.code,
+  }));
+  console.log("res", res);
+  TotalOfIgId.forEach((item) => {
+    res.forEach((element) => {
+      if (item.igId === element.id) {
+        item.name = element.name;
+        item.color = element.color;
+      }
+    });
+  });
+  return TotalOfIgId;
+};
 export async function SaleDataMonth(startTime, endTime) {
   const res = await revenue(startTime, endTime, localStorage.getItem("token"));
-  // xử lý dữ liệu
+
   const topProduct = [];
   const topUser = [];
   const totalOfPayment = [];
+  const totalOfIgId = [];
   const MONTHS = [
     { id: 1, name: "Tháng 1" },
     { id: 2, name: "Tháng 2" },
@@ -125,6 +182,7 @@ export async function SaleDataMonth(startTime, endTime) {
           });
           topUser.push(item);
           totalOfPayment.push(item);
+          totalOfIgId.push(item);
           dataOfRevenueMonth +=
             item.orderDetails[0].itemDetailDto.itemDto.sellPrice -
             item.orderDetails[0].itemDetailDto.itemDto.buyPrice;
@@ -147,7 +205,7 @@ export async function SaleDataMonth(startTime, endTime) {
       }
     });
   });
-  console.log("fee", feeOfPayment);
+  const dataOfIgIds = await getcategory(countIgId(totalOfIgId));
   return {
     data: {
       labels: MONTHS.map((item) => item.name),
@@ -168,6 +226,16 @@ export async function SaleDataMonth(startTime, endTime) {
         },
       ],
     },
+    dataOfIgId: {
+      labels: dataOfIgIds.map((item) => item.name),
+      datasets: [
+        {
+          label: "Doanh thu",
+          data: dataOfIgIds.map((item) => item.count),
+          backgroundColor: dataOfIgIds.map((item) => item.color),
+        },
+      ],
+    },
   };
 }
 export async function SaleDataDay(startTime, endTime, DAYS) {
@@ -175,6 +243,7 @@ export async function SaleDataDay(startTime, endTime, DAYS) {
   const topProduct = [];
   const topUser = [];
   const totalOfPayment = [];
+  const totalOfIgId = [];
   // const DAYS = [
   //   1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
   //   22, 23, 24, 25, 26, 27, 28, 29, 30, 31,
@@ -195,6 +264,7 @@ export async function SaleDataDay(startTime, endTime, DAYS) {
           });
           topUser.push(item);
           totalOfPayment.push(item);
+          totalOfIgId.push(item);
           dataOfRevenueDay +=
             item.orderDetails[0].itemDetailDto.itemDto.sellPrice -
             item.orderDetails[0].itemDetailDto.itemDto.buyPrice;
@@ -217,6 +287,7 @@ export async function SaleDataDay(startTime, endTime, DAYS) {
       }
     });
   });
+  const dataOfIgIds = await getcategory(countIgId(totalOfIgId));
   return {
     data: {
       labels: DAYS.map((item) => item),
@@ -237,6 +308,16 @@ export async function SaleDataDay(startTime, endTime, DAYS) {
         },
       ],
     },
+    dataOfIgId: {
+      labels: dataOfIgIds.map((item) => item.name),
+      datasets: [
+        {
+          label: "Doanh thu",
+          data: dataOfIgIds.map((item) => item.count),
+          backgroundColor: dataOfIgIds.map((item) => item.color),
+        },
+      ],
+    },
   };
 }
 export async function SaleDataYear(startTime, endTime, YEARS) {
@@ -244,6 +325,7 @@ export async function SaleDataYear(startTime, endTime, YEARS) {
   const topProduct = [];
   const topUser = [];
   const totalOfPayment = [];
+  const totalOfIgId = [];
 
   const revenueYear = [];
   var dataOfRevenueYear = 0;
@@ -261,6 +343,7 @@ export async function SaleDataYear(startTime, endTime, YEARS) {
           });
           topUser.push(item);
           totalOfPayment.push(item);
+          totalOfIgId.push(item);
           dataOfRevenueYear +=
             item.orderDetails[0].itemDetailDto.itemDto.sellPrice -
             item.orderDetails[0].itemDetailDto.itemDto.buyPrice;
@@ -283,6 +366,7 @@ export async function SaleDataYear(startTime, endTime, YEARS) {
       }
     });
   });
+  const dataOfIgIds = await getcategory(countIgId(totalOfIgId));
   return {
     data: {
       labels: YEARS.map((item) => item),
@@ -300,6 +384,16 @@ export async function SaleDataYear(startTime, endTime, YEARS) {
           label: "Doanh thu",
           data: feeOfPayment.map((item) => item.count),
           backgroundColor: ["Green", "#3e95cd", "red"],
+        },
+      ],
+    },
+    dataOfIgId: {
+      labels: dataOfIgIds.map((item) => item.name),
+      datasets: [
+        {
+          label: "Doanh thu",
+          data: dataOfIgIds.map((item) => item.count),
+          backgroundColor: dataOfIgIds.map((item) => item.color),
         },
       ],
     },

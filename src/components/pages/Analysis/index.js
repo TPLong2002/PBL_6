@@ -9,6 +9,7 @@ import "chart.js/auto";
 import { Bar, Doughnut, Pie } from "react-chartjs-2";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import TopProducts from "./TopProduct.js";
+import { Legend } from "chart.js/auto";
 
 function Analysis() {
   const [selectChart, setSelectChart] = useState(1);
@@ -52,6 +53,16 @@ function Analysis() {
         },
       ],
     },
+    dataOfIgId: {
+      labels: [],
+      datasets: [
+        {
+          label: "Population (millions)",
+          backgroundColor: ["#3e95cd"],
+          data: [],
+        },
+      ],
+    },
   });
   const [chartYear, setChartYear] = useState({
     data: {
@@ -76,6 +87,16 @@ function Analysis() {
         },
       ],
     },
+    dataOfIgId: {
+      labels: [],
+      datasets: [
+        {
+          label: "Population (millions)",
+          backgroundColor: ["#3e95cd"],
+          data: [],
+        },
+      ],
+    },
   });
   const [chartDay, setChartDay] = useState({
     data: {
@@ -91,6 +112,16 @@ function Analysis() {
     topProducts: [],
     topUsers: [],
     dataOfPayment: {
+      labels: [],
+      datasets: [
+        {
+          label: "Population (millions)",
+          backgroundColor: ["#3e95cd"],
+          data: [],
+        },
+      ],
+    },
+    dataOfIgId: {
       labels: [],
       datasets: [
         {
@@ -307,20 +338,46 @@ function Analysis() {
           <div className="w-1/3">
             <div className="flex flex-col w-3/4 h-1/2">
               <label className="block text-sm font-medium text-gray-900 dark:text-white pb-2">
-                Khách hàng tiềm năng
+                Danh mục sản phẩn bán ra
               </label>
               {selectChart === 1 && (
                 <Doughnut
                   className="border-2 rounded-md shadow-md"
-                  data={chartYear.dataOfPayment}
-                  options={options}
+                  data={chartYear.dataOfIgId}
+                  options={{
+                    ...options,
+                    plugins: { ...options.plugins, legend: { display: false } },
+                  }}
+                  plugins={[ChartDataLabels]}
+                />
+              )}
+              {selectChart === 2 && (
+                <Doughnut
+                  className="border-2 rounded-md shadow-md"
+                  data={chartMonth.dataOfIgId}
+                  options={{
+                    ...options,
+                    plugins: { ...options.plugins, legend: { display: false } },
+                  }}
+                  plugins={[ChartDataLabels]}
+                />
+              )}
+
+              {selectChart === 3 && (
+                <Doughnut
+                  className="border-2 rounded-md shadow-md"
+                  data={chartDay.dataOfIgId}
+                  options={{
+                    ...options,
+                    plugins: { ...options.plugins, legend: { display: false } },
+                  }}
                   plugins={[ChartDataLabels]}
                 />
               )}
             </div>
             <div className="pt-2 flex flex-col w-3/4 h-1/2">
               <label className="block text-sm font-medium text-gray-900 dark:text-white pb-2">
-                Khách hàng tiềm năng
+                Hình thức thanh toán
               </label>
               {selectChart === 1 && (
                 <Doughnut
