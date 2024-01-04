@@ -4,16 +4,17 @@ import DateTimePicker from "react-datetime-picker";
 import "react-datetime-picker/dist/DateTimePicker.css";
 import "react-calendar/dist/Calendar.css";
 import "react-clock/dist/Clock.css";
-import { format } from "date-fns";
+import { format, set } from "date-fns";
 import "chart.js/auto";
-import { Bar, Doughnut, Pie } from "react-chartjs-2";
+import { Bar, Doughnut, Line, Pie } from "react-chartjs-2";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import TopProducts from "./TopProduct.js";
 import { Legend } from "chart.js/auto";
 
 function Analysis() {
   const [selectChart, setSelectChart] = useState(1);
-  const [year, setYear] = useState([2021, 2022, 2023]);
+  const [compare, setCompare] = useState(false);
+  const [year, setYear] = useState([2023]);
   if (!year.includes(Number(new Date().getFullYear()))) {
     setYear([...year, new Date().getFullYear()]);
   }
@@ -42,7 +43,7 @@ function Analysis() {
       ],
     },
     topProducts: [],
-    topUsers: [],
+    topUsers: [{ id: 1, count: 2, name: "abc" }],
     dataOfPayment: {
       labels: [],
       datasets: [
@@ -132,6 +133,21 @@ function Analysis() {
       ],
     },
   });
+  const [dataCompare, setDataCompare] = useState({
+    labels: [],
+    datasets: [
+      {
+        label: "DAYS",
+        backgroundColor: ["#3e95cd"],
+        data: [],
+      },
+      {
+        label: "DAYS",
+        backgroundColor: ["#3e95cd"],
+        data: [],
+      },
+    ],
+  });
   var options = {
     tooltips: {
       enabled: false,
@@ -151,6 +167,7 @@ function Analysis() {
       },
     },
   };
+
   useEffect(() => {
     SaleDataMonth(
       format(new Date(`${time.year}-01-01T00:00:00`), "yyyy-MM-dd'T'HH:mm:ss"),
@@ -196,6 +213,31 @@ function Analysis() {
     const { name, value } = e.target;
     setTime({ ...time, [name]: value });
   };
+  const handleCompare = async () => {
+    const data = year.map((item) => {
+      return SaleDataMonth(
+        format(new Date(`${item}-01-01T00:00:00`), "yyyy-MM-dd'T'HH:mm:ss"),
+        format(new Date(`${item}-12-31T23:59:59`), "yyyy-MM-dd'T'HH:mm:ss"),
+        MONTHS
+      );
+    });
+    const res = await Promise.all(data);
+    const color = ["#666666", "#FF0000", "#00FF00", "#0000FF"];
+    setDataCompare({
+      labels: MONTHS,
+      datasets: res.map((item, index) => ({
+        label: year[index],
+        data: item.data.datasets[0].data,
+        color: color[index],
+      })),
+    });
+    setCompare(!compare);
+    setSelectChart(1);
+  };
+  const handleClick = (i) => {
+    setCompare(false);
+    setSelectChart(i);
+  };
   return (
     <div className=" max-h-[45rem]">
       <div className="text-2xl font-bold">Sales Dashboard</div>
@@ -237,28 +279,36 @@ function Analysis() {
           </select>
         </div>
         <button
-          onClick={() => setSelectChart(1)}
+          onClick={() => handleClick(1)}
           className={`ml-2  text-white px-2 py-2 rounded ${
-            selectChart === 1 ? "bg-red-500" : "bg-blue-500"
+            selectChart === 1 && !compare ? "bg-red-500" : "bg-blue-500"
           } transition ease-in-out delay-50  hover:-translate-y-1 hover:scale-105 duration-300`}
         >
           Năm
         </button>
         <button
-          onClick={() => setSelectChart(2)}
+          onClick={() => handleClick(2)}
           className={`ml-2  text-white px-2 py-2 rounded ${
-            selectChart === 2 ? "bg-red-500" : "bg-blue-500"
+            selectChart === 2 && !compare ? "bg-red-500" : "bg-blue-500"
           } transition ease-in-out delay-50  hover:-translate-y-1 hover:scale-105 duration-300`}
         >
           Tháng
         </button>
         <button
-          onClick={() => setSelectChart(3)}
+          onClick={() => handleClick(3)}
           className={`ml-2  text-white px-2 py-2 rounded ${
-            selectChart === 3 ? "bg-red-500" : "bg-blue-500"
+            selectChart === 3 && !compare ? "bg-red-500" : "bg-blue-500"
           } transition ease-in-out delay-50  hover:-translate-y-1 hover:scale-105 duration-300`}
         >
           Ngày
+        </button>
+        <button
+          onClick={() => handleCompare()}
+          className={`ml-2  text-white px-2 py-2 rounded ${
+            compare ? "bg-red-500" : "bg-blue-500"
+          } transition ease-in-out delay-50  hover:-translate-y-1 hover:scale-105 duration-300`}
+        >
+          So sánh doanh thu các năm
         </button>
         {/* <div className="w-1/2 ">
           <DateTimePicker value={startTime} onChange={setStartTime} />
@@ -272,26 +322,33 @@ function Analysis() {
       <div className="h-[38rem] flex flex-col mt-2">
         <div className="flex space-x-2">
           <div className="w-2/3">
-            {selectChart === 1 && (
-              <Bar
-                className="border-2 rounded-md shadow-md"
-                data={chartYear.data}
-              />
+            {compare ? (
+              <Line data={dataCompare} />
+            ) : (
+              <>
+                {selectChart === 1 && (
+                  <Bar
+                    className="border-2 rounded-md shadow-md"
+                    data={chartYear.data}
+                  />
+                )}
+
+                {selectChart === 2 && (
+                  <Bar
+                    className="border-2 rounded-md shadow-md"
+                    data={chartMonth.data}
+                  />
+                )}
+
+                {selectChart === 3 && (
+                  <Bar
+                    className="border-2 rounded-md shadow-md"
+                    data={chartDay.data}
+                  />
+                )}
+              </>
             )}
 
-            {selectChart === 2 && (
-              <Bar
-                className="border-2 rounded-md shadow-md"
-                data={chartMonth.data}
-              />
-            )}
-
-            {selectChart === 3 && (
-              <Bar
-                className="border-2 rounded-md shadow-md"
-                data={chartDay.data}
-              />
-            )}
             <div className="flex space-x-3">
               <div className="flex flex-col mt-3 w-1/2">
                 <label className="block text-sm font-medium text-gray-900 dark:text-white">
@@ -320,17 +377,23 @@ function Analysis() {
                 <label className="block text-sm font-medium text-gray-900 dark:text-white">
                   Khách hàng tiềm năng
                 </label>
-                {selectChart === 1 && chartMonth.topUsers.length > 0 && (
+                {selectChart === 1 && chartYear.topUsers.length > 0 && (
                   <TopProducts
                     products={chartYear.topUsers}
                     url="/users/history"
                   />
                 )}
                 {selectChart === 2 && chartMonth.topUsers.length > 0 && (
-                  <TopProducts products={chartMonth.topUsers} />
+                  <TopProducts
+                    products={chartMonth.topUsers}
+                    url="/users/history"
+                  />
                 )}
-                {selectChart === 3 && chartMonth.topUsers.length > 0 && (
-                  <TopProducts products={chartDay.topUsers} />
+                {selectChart === 3 && chartDay.topUsers.length > 0 && (
+                  <TopProducts
+                    products={chartDay.topUsers}
+                    url="/users/history"
+                  />
                 )}
               </div>
             </div>

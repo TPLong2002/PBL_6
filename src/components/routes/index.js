@@ -14,8 +14,9 @@ import Catalogs from "../pages/Catalogs";
 import Login from "../pages/Login";
 import Event from "../pages/Event";
 import LoginLayout from "../layout/LoginLayout";
+import Contact from "../pages/Contact";
 const publicRoutes = [
-  { path: "/", component: Login, Layout: LoginLayout },
+  { path: "", component: Login, Layout: LoginLayout },
   { path: "/chat", component: Chat },
   { path: "/product", component: Product },
   { path: "/test", component: Test },
@@ -31,6 +32,7 @@ const publicRoutes = [
   { path: "/catalogs", component: Catalogs },
   { path: "/event", component: Event },
   { path: "/login", component: Login, Layout: LoginLayout },
+  { path: "/contact", component: Contact },
 ];
 const privateRoutes = [];
 export { publicRoutes, privateRoutes };

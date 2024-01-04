@@ -28,7 +28,7 @@ export default function App() {
           setCatalog(res.data);
           const itemPromises = res.data.map((item) => {
             return request
-              .get(`/items/${item.id}`, { params: { page: 1, size: 5 } })
+              .get(`/items/${item.id}`, { params: { page: 1, size: 20 } })
               .then((res) => {
                 console.log(res);
                 return res.data.map((product) => ({

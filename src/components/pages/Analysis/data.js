@@ -1,6 +1,8 @@
 import revenue from "../../../services/axios/revenue";
 import listcatalogs from "../../../services/axios/getcatalogs";
+
 import { format } from "date-fns";
+import axios from "axios";
 
 function count(products) {
   const countProduct = [];
@@ -30,13 +32,12 @@ function count(products) {
   });
   return countProduct;
 }
-function countUser(users) {
+async function countUser(users) {
   const countUsers = [];
   users.forEach((item) => {
     if (countUsers.length === 0) {
       countUsers.push({
         id: item.customerId,
-        name: item.name,
         count: 1,
       });
     } else {
@@ -50,13 +51,25 @@ function countUser(users) {
       if (!check) {
         countUsers.push({
           id: item.customerId,
-          name: item.name,
           count: 1,
         });
       }
     }
   });
-  return countUsers;
+  const promises = countUsers.map(async (item) => {
+    return axios
+      .get(`http://api.shopiec.shop/api/users/user/${item.id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      })
+      .then((res) => {
+        item.name = res.data.firstName + " " + res.data.lastName;
+      });
+  });
+  return Promise.all(promises).then(() => {
+    return countUsers.sort((a, b) => b.count - a.count);
+  });
 }
 function countPayment(products) {
   const countProduct = [];
@@ -133,7 +146,6 @@ const getcategory = async (TotalOfIgId) => {
     name: item.name,
     color: colors.find((color) => color.id === item.id)?.code,
   }));
-  console.log("res", res);
   TotalOfIgId.forEach((item) => {
     res.forEach((element) => {
       if (item.igId === element.id) {
@@ -215,7 +227,7 @@ export async function SaleDataMonth(startTime, endTime) {
       ],
     },
     topProducts: count(topProduct).sort((a, b) => b.count - a.count),
-    topUsers: countUser(topUser).sort((a, b) => b.count - a.count),
+    topUsers: await countUser(topUser),
     dataOfPayment: {
       labels: feeOfPayment.map((item) => item.name),
       datasets: [
@@ -297,7 +309,7 @@ export async function SaleDataDay(startTime, endTime, DAYS) {
       ],
     },
     topProducts: count(topProduct).sort((a, b) => b.count - a.count),
-    topUsers: countUser(topUser).sort((a, b) => b.count - a.count),
+    topUsers: await countUser(topUser),
     dataOfPayment: {
       labels: feeOfPayment.map((item) => item.name),
       datasets: [
@@ -376,7 +388,7 @@ export async function SaleDataYear(startTime, endTime, YEARS) {
       ],
     },
     topProducts: count(topProduct).sort((a, b) => b.count - a.count),
-    topUsers: countUser(topUser).sort((a, b) => b.count - a.count),
+    topUsers: await countUser(topUser),
     dataOfPayment: {
       labels: feeOfPayment.map((item) => item.name),
       datasets: [

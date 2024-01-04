@@ -9,6 +9,7 @@ const Paths = [
   { to: "/review", page: "Đánh giá" },
   { to: "/catalogs", page: "Danh mục" },
   { to: "/event", page: "Sự kiện" },
+  { to: "/contact", page: "Liên hệ" },
 ];
 
 export { Paths };
