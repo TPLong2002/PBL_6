@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import getAlluser from "../../../services/axios/getAlluser";
 import axios from "axios";
-import Pagination from "../../../services/other/Pagination";
+import NewPagination from "../../../services/other/NewPagination";
 
 function App() {
   const [users, setUsers] = useState([
@@ -22,6 +22,7 @@ function App() {
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState(1);
   const size = 10;
+  const [couterUser, SetCouterUser] = useState();
 
   useEffect(() => {
     getAlluser(localStorage.getItem("token"), {
@@ -29,6 +30,7 @@ function App() {
       size: size,
       sort: "ASC",
     }).then((res) => {
+      SetCouterUser(res.headers["x-total"]);
       setPages(Math.ceil(res.headers["x-total"] / size));
       console.log(res);
       setUsers(res.data);
@@ -44,8 +46,8 @@ function App() {
     });
   };
 
-  const handleClick = (e) => {
-    setPage(e.selected + 1);
+  const handleClick = (event, value) => {
+    setPage(value);
   };
 
   function handleSubmit(index) {
@@ -62,14 +64,9 @@ function App() {
   return (
     <div className="max-h-[46rem]">
       <div className="flex items-center justify-center border-gray-600 ">
-        <input
-          type="text"
-          placeholder="Tìm..."
-          className="w-full p-2 border border-gray-400 rounded mr-2 mb-2"
-        />
-        <button className="bg-blue-500 text-white px-4 py-2 rounded mb-2 transition ease-in-out delay-50 hover:-translate-y-1 hover:scale-105 duration-300">
-          Tìm
-        </button>
+        <label className="block text-md p-4 font-medium text-gray-900 dark:text-white">
+          Số lượng user: {couterUser}
+        </label>
       </div>
       <div className="overflow-y-auto scrollbar-hide h-[40.5rem] border border-slate-500">
         <table className=" w-full ">
@@ -193,7 +190,12 @@ function App() {
           </tbody>
         </table>
       </div>
-      <Pagination pageCount={pages} handlePageClick={handleClick} />
+      {/* <Pagination pageCount={pages} handlePageClick={handleClick} /> */}
+
+      <NewPagination
+        pageCount={pages}
+        handlePageClick={handleClick}
+      ></NewPagination>
     </div>
   );
 }

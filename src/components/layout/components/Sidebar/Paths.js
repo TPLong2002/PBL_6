@@ -10,6 +10,7 @@ const Paths = [
   { to: "/catalogs", page: "Danh mục" },
   { to: "/event", page: "Sự kiện" },
   { to: "/contact", page: "Liên hệ" },
+  // { to: "/test", page: "test" },
 ];
 
 export { Paths };

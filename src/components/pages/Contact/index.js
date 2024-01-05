@@ -2,9 +2,10 @@ import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import getAlluser from "../../../services/axios/getAlluser";
 import axios from "axios";
-import Pagination from "../../../services/other/Pagination";
+import NewPagination from "../../../services/other/NewPagination";
 
 function App() {
+  const [update, setUpdate] = useState(true);
   const [contacts, setContacts] = useState([
     // {
     //   id: 1,
@@ -29,7 +30,7 @@ function App() {
         params: {
           page: page,
           size: size,
-          sort: "ASC",
+          sort: "DESC",
         },
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -37,19 +38,26 @@ function App() {
         },
       })
       .then((res) => {
-        setPages(Math.ceil(res.headers["x-total"] / size));
+        setPages(Math.ceil(res.headers["x-total-page"] / size));
         setContacts(res.data);
+      })
+      .catch((error) => {
+        setContacts([]);
       });
-  }, [page]);
+  }, [page, update]);
 
   const handleDel = (id) => {
     if (window.confirm("Bạn có chắc chắn muốn xóa không?")) {
-      axios.delete("http://api.shopiec.shop/api/contacts/contact/" + id, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-          "Content-Type": "application/json",
-        },
-      });
+      axios
+        .delete("http://api.shopiec.shop/api/contacts/contact/" + id, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+          },
+        })
+        .then((res) => {
+          setUpdate(!update);
+        });
     }
   };
   const handleClick = (e) => {
@@ -113,7 +121,7 @@ function App() {
           </tbody>
         </table>
       </div>
-      <Pagination pageCount={pages} handlePageClick={handleClick} />
+      <NewPagination pageCount={pages} handlePageClick={handleClick} />
     </div>
   );
 }

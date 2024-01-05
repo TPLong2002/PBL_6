@@ -77,20 +77,20 @@ function countPayment(products) {
     if (countProduct.length === 0) {
       countProduct.push({
         paymentMethodId: item.paymentMethodId,
-        count: item.totalFee,
+        count: item.orderDetails[0].itemDetailDto.itemDto.sellPrice,
       });
     } else {
       var check = false;
       countProduct.forEach((element) => {
         if (element.paymentMethodId === item.paymentMethodId) {
-          element.count += item.totalFee;
+          element.count += item.orderDetails[0].itemDetailDto.itemDto.sellPrice;
           check = true;
         }
       });
       if (!check) {
         countProduct.push({
           paymentMethodId: item.paymentMethodId,
-          count: item.totalFee,
+          count: item.orderDetails[0].itemDetailDto.itemDto.sellPrice,
         });
       }
     }

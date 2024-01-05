@@ -181,12 +181,18 @@ export default function App() {
                 <div className="absolute top-2 left-2 bg-red-500 text-white py-1 px-2 rounded-full text-xs">
                   -{product.discount}%
                 </div>
-                <div className="text-center mb-5">{product.name}</div>
+                <div className="text-center mb-5 max-h-[5rem] overflow-hidden whitespace-nowrap">
+                  {product.name}
+                </div>
                 <div className="text-center line-through mb-1 text-[0.9rem] text-gray-500">
-                  ₫{product.discount}
+                  {(
+                    ((product.discount + 100) / 100) *
+                    product.sellPrice
+                  ).toLocaleString()}
+                  ₫
                 </div>
                 <div className="text-center mb-2 text-[#dd0105]">
-                  ₫{product.sellPrice}
+                  {product.sellPrice.toLocaleString()}₫
                 </div>
                 <div className="text-center">đã bán: 1</div>
                 <div className="flex justify-center mt-2">

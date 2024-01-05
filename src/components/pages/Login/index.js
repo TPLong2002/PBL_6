@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { redirect, useNavigate } from "react-router-dom";
 
 import loginAPI from "../../../services/axios/login";
 import logo from "../../../img/logo/logo.png";
@@ -19,11 +19,12 @@ function App() {
       const res = await loginAPI(login.email, login.password);
       if (res && res.data.token) {
         if (res.data.roleId === "2") {
+          console.log("login");
           localStorage.setItem("token", res.data.token);
           localStorage.setItem("name", res.data.firstName);
           localStorage.setItem("userId", res.data.id);
           localStorage.setItem("user", JSON.stringify(res.data));
-          navigate("/chat");
+          window.location.href = "/chat";
         } else {
           alert("Tài khoản này không khả dụng");
         }

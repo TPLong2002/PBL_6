@@ -2,20 +2,22 @@ import { Fragment, useEffect, useState } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 
-import Pagination from "../../../services/other/Pagination";
+import NewPagination from "../../../services/other/NewPagination";
 
 import getOrders from "../../../services/axios/getOrders";
 function App() {
-  const [pages, setPages] = useState(0);
   var size = 10;
+  const [select, setSelect] = useState(0);
   const [Orders, setOrders] = useState([]);
   const [page, setPage] = useState(1);
+  const [pages, setPages] = useState(1);
   useEffect(() => {
     getOrders(localStorage.getItem("token"), {
       page: page,
       size: size,
-      sort: "ASC",
+      sort: "DESC",
     }).then((res) => {
+      console.log(res);
       setPages(Math.ceil(res.headers["x-total-order"] / size));
       setOrders(res.data);
     });
@@ -24,12 +26,14 @@ function App() {
     return classes.filter(Boolean).join(" ");
   }
   async function handleSelect(status) {
+    setSelect(status);
     if (status === 0) {
       getOrders(localStorage.getItem("token"), {
         page: page,
         size: 10,
-        sort: "ASC",
+        sort: "DESC",
       }).then((res) => {
+        setPages(Math.ceil(res.headers["x-total-order"] / size));
         setOrders(res.data);
       });
       return;
@@ -37,7 +41,7 @@ function App() {
       const res = await getOrders(localStorage.getItem("token"), {
         page: page,
         size: 10,
-        sort: "ASC",
+        sort: "DESC",
       });
       const data = res.data.filter(
         (order) => order.orderDeliveryStatusDetails.deliveryStatusId === status
@@ -45,17 +49,20 @@ function App() {
       setOrders(data);
     }
   }
-  const handleClick = (e) => {
-    setPage(e.selected + 1);
+  const handleClick = (event, value) => {
+    setPage(value);
   };
   return (
     <div className="max-h-[40rem]">
       <div className="font-bold text-[30px]">Đơn hàng</div>
       <div className="flex flex-row p-2 mb-5 bg-gray-50 border border-slate-950">
-        <div className="w-1/2 text-center">
+        <div className="w-1/2 text-center ">
           <button
             onClick={() => handleSelect(0)}
-            className="text-left p-1 border rounder bg-gray-200"
+            // className="text-left p-1 border rounder bg-gray-200"
+            className={`text-left p-1 border rounded-md ${
+              select === 0 ? "bg-red-500 text-white" : "bg-gray-200"
+            }`}
           >
             Tất cả đơn hàng
           </button>
@@ -63,7 +70,9 @@ function App() {
         <div className="w-1/2 text-center">
           <button
             onClick={() => handleSelect(1)}
-            className="text-left p-1 border rounder bg-gray-200"
+            className={`text-left p-1 border rounded-md ${
+              select === 1 ? "bg-red-500 text-white" : "bg-gray-200"
+            }`}
           >
             Đơn hàng đang duyệt
           </button>
@@ -71,7 +80,9 @@ function App() {
         <div className="w-1/2 text-center">
           <button
             onClick={() => handleSelect(2)}
-            className="text-left p-1 border rounder bg-gray-200"
+            className={`text-left p-1 border rounded-md ${
+              select === 2 ? "bg-red-500 text-white" : "bg-gray-200"
+            }`}
           >
             Đơn hàng đang giao
           </button>
@@ -79,7 +90,9 @@ function App() {
         <div className="w-1/2 text-center">
           <button
             onClick={() => handleSelect(3)}
-            className="text-left p-1 border rounder bg-gray-200"
+            className={`text-left p-1 border rounded-md ${
+              select === 3 ? "bg-red-500 text-white" : "bg-gray-200"
+            }`}
           >
             Đơn hàng thành công
           </button>
@@ -220,7 +233,7 @@ function App() {
           </div>
         ))}
       </div>
-      <Pagination pageCount={pages} handlePageClick={handleClick} />
+      <NewPagination pageCount={pages} handlePageClick={handleClick} />
     </div>
   );
 }

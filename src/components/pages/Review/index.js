@@ -49,7 +49,8 @@ function Review() {
           }
         )
         .then((res) => {
-          console.log(res);
+          setUpdate(!update);
+          setComments([]);
         });
     }
   };
