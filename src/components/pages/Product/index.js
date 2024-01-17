@@ -6,6 +6,9 @@ import { Link } from "react-router-dom";
 import request from "../../../services/axios/getProduct";
 import StarRating from "../../../services/other/rating";
 import { set } from "date-fns";
+import NewPagina from "../../../services/other/NewPagination";
+import { SaleDataYear } from "../Analysis/data";
+import { format } from "date-fns";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -15,11 +18,21 @@ export default function App() {
   const [catalog, setCatalog] = useState([]);
   const [products, setProducts] = useState([]);
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const [pages, setPages] = useState(1);
+  const [sale, setSale] = useState([]);
 
   const handleSelectCatalog = (index) => {
     setSelectCatalog(index);
   };
   useEffect(() => {
+    SaleDataYear(
+      format(new Date(`${2020}-01-01T00:00:00`), "yyyy-MM-dd'T'HH:mm:ss"),
+      format(new Date(`${2024}-12-31T23:59:59`), "yyyy-MM-dd'T'HH:mm:ss"),
+      [2020, 2021, 2022, 2023, 2024]
+    ).then((res) => {
+      setSale(res.topProducts);
+    });
     if (selectCatalog === 0) {
       setProducts([]);
       request
@@ -43,20 +56,27 @@ export default function App() {
           setProducts(res.flat());
         });
     } else {
-      request.get(`/items/${selectCatalog}`).then((res) => {
-        const productsWithIgId = res.data.map((product) => ({
-          ...product,
-          igId: selectCatalog,
-        }));
-        setProducts(productsWithIgId);
-      });
+      request
+        .get(`/items/${selectCatalog}`, { params: { page: page, size: 10 } })
+        .then((res) => {
+          setPages(res.headers["x-total-page"]);
+          const productsWithIgId = res.data.map((product) => ({
+            ...product,
+            igId: selectCatalog,
+          }));
+          setProducts(productsWithIgId);
+        });
     }
-  }, [selectCatalog]);
+  }, [selectCatalog, page]);
   const handleSearch = () => {
     request.get(`/items/search/${search}`).then((res) => {
       setProducts(res.data);
     });
   };
+  const handleClick = (event, value) => {
+    setPage(value);
+  };
+  console.log(sale);
   return (
     <div className="flex flex-col max-h-[46rem]">
       <div className="flex w-full">
@@ -155,6 +175,7 @@ export default function App() {
       </div>
       <div className="flex flex-wrap w-full mt-4 overflow-y-auto h-[48rem] scrollbar-hide">
         {products.map((product, index) => {
+          const saleItem = sale.find((item) => item.id === product.id);
           return (
             <Link
               key={index}
@@ -194,7 +215,9 @@ export default function App() {
                 <div className="text-center mb-2 text-[#dd0105]">
                   {product.sellPrice.toLocaleString()}₫
                 </div>
-                <div className="text-center">đã bán: 1</div>
+                <div className="text-center">
+                  {saleItem ? `Đã bán: ${saleItem.count}` : "Đã bán: 0"}
+                </div>
                 <div className="flex justify-center mt-2">
                   <StarRating rating={product.rating} />
                 </div>
@@ -203,6 +226,11 @@ export default function App() {
           );
         })}
       </div>
+      {selectCatalog !== 0 ? (
+        <NewPagina pageCount={pages} handlePageClick={handleClick} />
+      ) : (
+        <></>
+      )}
     </div>
   );
 }

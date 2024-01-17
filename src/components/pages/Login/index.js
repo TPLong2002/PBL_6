@@ -24,7 +24,7 @@ function App() {
           localStorage.setItem("name", res.data.firstName);
           localStorage.setItem("userId", res.data.id);
           localStorage.setItem("user", JSON.stringify(res.data));
-          window.location.href = "/chat";
+          window.location.href = "/product";
         } else {
           alert("Tài khoản này không khả dụng");
         }
